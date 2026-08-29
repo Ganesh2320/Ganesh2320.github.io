@@ -171,16 +171,22 @@
                     <!-- ADMIN ACTIVITY TAB -->
                     <div id="tabAdminActivity" class="max-w-4xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden space-y-4">
                         <h3 class="text-lg font-bold text-white mb-2">⚡ Employee Live Activity Logs</h3>
-                        <p class="text-xs text-slate-400 mb-4">Select an employee to view date-wise duty hours, punch-in/out, breaks, and task reports.</p>
+                        <p class="text-xs text-slate-400 mb-4">Select an employee and date to view historical attendance & task logs.</p>
                         
-                        <!-- Employee Filter Dropdown for Activity -->
-                        <div class="mb-4">
-                            <select id="filterActivityEmp" onchange="renderAdminActivity()" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                                <option value="">-- All Employees --</option>
-                            </select>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Filter Employee</label>
+                                <select id="filterActivityEmp" onchange="renderAdminActivity()" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                                    <option value="">-- All Employees --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Filter Date</label>
+                                <input type="date" id="filterActivityDate" onchange="renderAdminActivity()" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                            </div>
                         </div>
 
-                        <div class="space-y-3 max-h-[60vh] overflow-y-auto" id="adminActivityContainer">
+                        <div class="space-y-3 max-h-[55vh] overflow-y-auto" id="adminActivityContainer">
                             <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-xs text-slate-400 text-center">No activity recorded yet.</div>
                         </div>
                     </div>
@@ -345,6 +351,20 @@
         let isOnBreak = false;
         let globalTrackingInterval = null;
 
+        // Automatically reset daily punch status if calendar date changes
+        function checkDailyReset() {
+            let lastDate = localStorage.getItem('app_current_date');
+            let todayDate = new Date().toISOString().split('T')[0];
+            if (lastDate !== todayDate) {
+                // Clear active punch-in state for all employees when day changes
+                employees.forEach(emp => {
+                    localStorage.removeItem('punched_in_' + emp.id);
+                });
+                localStorage.setItem('app_current_date', todayDate);
+            }
+        }
+        checkDailyReset();
+
         // Persistent State Restoration on page refresh
         window.addEventListener('DOMContentLoaded', () => {
             let activeRole = localStorage.getItem('active_role');
@@ -357,6 +377,13 @@
                 document.getElementById('adminDashboard').classList.remove('hidden');
                 document.getElementById('currentAdminUser').value = adminAuth.user;
                 document.getElementById('currentAdminPass').value = adminAuth.pass;
+                
+                // Set default filter date to today
+                let todayStr = new Date().toISOString().split('T')[0];
+                if(document.getElementById('filterActivityDate')) {
+                    document.getElementById('filterActivityDate').value = todayStr;
+                }
+
                 renderAdminList();
                 populateEditDropdown();
                 populateAssignEmpDropdown();
@@ -471,6 +498,12 @@
                 document.getElementById('adminDashboard').classList.remove('hidden');
                 document.getElementById('currentAdminUser').value = adminAuth.user;
                 document.getElementById('currentAdminPass').value = adminAuth.pass;
+                
+                let todayStr = new Date().toISOString().split('T')[0];
+                if(document.getElementById('filterActivityDate')) {
+                    document.getElementById('filterActivityDate').value = todayStr;
+                }
+
                 renderAdminList();
                 populateEditDropdown();
                 populateAssignEmpDropdown();
@@ -489,6 +522,7 @@
             const u = document.getElementById('loginEmpUser').value.trim();
             const p = document.getElementById('loginEmpPass').value.trim();
 
+            checkDailyReset();
             employees = JSON.parse(localStorage.getItem('geofence_employees')) || defaultEmployees;
             let emp = employees.find(e => String(e.username).trim() === u && String(e.pass).trim() === p);
             
@@ -683,28 +717,33 @@
         function renderAdminActivity() {
             let logs = JSON.parse(localStorage.getItem('employee_activities')) || [];
             let tasks = JSON.parse(localStorage.getItem('employee_tasks')) || [];
-            let employeesList = JSON.parse(localStorage.getItem('geofence_employees')) || defaultEmployees;
             let selectedEmpId = document.getElementById('filterActivityEmp') ? document.getElementById('filterActivityEmp').value : "";
+            let selectedDate = document.getElementById('filterActivityDate') ? document.getElementById('filterActivityDate').value : "";
 
             let container = document.getElementById('adminActivityContainer');
             if(!container) return;
 
-            // Filter by employee if selected
-            let filteredLogs = selectedEmpId ? logs.filter(l => l.empId === selectedEmpId) : logs;
-            let filteredTasks = selectedEmpId ? tasks.filter(t => t.empId === selectedEmpId) : tasks;
+            // Filter logs by Employee and Date
+            let filteredLogs = logs.filter(l => {
+                let matchEmp = selectedEmpId ? l.empId === selectedEmpId : true;
+                let matchDate = selectedDate ? l.date === selectedDate : true;
+                return matchEmp && matchDate;
+            });
+
+            let filteredTasks = tasks.filter(t => {
+                let matchEmp = selectedEmpId ? t.empId === selectedEmpId : true;
+                let matchDate = selectedDate ? t.date === selectedDate : true;
+                return matchEmp && matchDate;
+            });
 
             if(filteredLogs.length === 0 && filteredTasks.length === 0) {
-                container.innerHTML = `<div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-xs text-slate-400 text-center">No activity records found.</div>`;
+                container.innerHTML = `<div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-xs text-slate-400 text-center">No activity records found for this date.</div>`;
                 return;
             }
 
-            container.innerHTML = '';
-
-            // Group by employee and date for a clean professional report
             let reportHTML = '';
             
-            // Show Activity Logs
-            reportHTML += `<h4 class="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2">⏱️ Punch & Break Activity Logs</h4>`;
+            reportHTML += `<h4 class="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2">⏱️ Punch & Break Activity Logs (${selectedDate || 'All Dates'})</h4>`;
             filteredLogs.forEach(l => {
                 let badgeColor = l.action.includes('Punch In') ? 'text-emerald-400 bg-emerald-500/10' : (l.action.includes('Punch Out') ? 'text-red-400 bg-red-500/10' : 'text-amber-400 bg-amber-500/10');
                 reportHTML += `
@@ -712,7 +751,7 @@
                         <div>
                             <span class="font-bold text-white">${l.empName} (${l.empId})</span>
                             <p class="text-slate-300 mt-0.5">${l.details}</p>
-                            <span class="text-[10px] text-indigo-300">📅 Date: ${l.date || 'Today'}</span>
+                            <span class="text-[10px] text-indigo-300">📅 Date: ${l.date}</span>
                         </div>
                         <div class="text-right">
                             <span class="px-2 py-1 rounded text-[10px] font-bold ${badgeColor}">${l.action}</span>
@@ -722,7 +761,6 @@
                 `;
             });
 
-            // Show Submitted Tasks Reports
             reportHTML += `<h4 class="text-xs font-bold text-indigo-400 uppercase tracking-wider mt-4 mb-2">📋 Submitted Task Reports</h4>`;
             filteredTasks.forEach(t => {
                 reportHTML += `
