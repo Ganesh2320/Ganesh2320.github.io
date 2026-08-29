@@ -9,304 +9,304 @@
     <style>
         #map { height: 100%; width: 100%; border-radius: 0.75rem; }
         body { -webkit-text-size-adjust: 100%; touch-action: manipulation; }
-        /* Custom scrollbar for flawless mobile sidebar experience */
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans w-screen h-screen flex flex-col overflow-hidden m-0 p-0">
+<body class="bg-slate-950 text-slate-100 font-sans w-screen h-screen flex items-center justify-center overflow-hidden p-0 md:p-4">
 
-    <!-- ================= 1. LOGIN SECTION ================= -->
-    <div id="authSection" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-2xl w-full max-w-md shadow-2xl my-auto">
-            <div class="text-center mb-6">
-                <div class="w-12 h-12 bg-indigo-600 rounded-xl mx-auto flex items-center justify-center text-xl font-bold mb-3 shadow-lg shadow-indigo-500/30">🛡️</div>
-                <h2 class="text-2xl font-bold text-white">Live Tracking</h2>
-                <p class="text-xs text-slate-400 mt-1">Admin & Employee Authentication</p>
+    <!-- App Container with Top/Bottom and Left/Right Gaps on Desktop -->
+    <div class="w-full h-full md:max-w-7xl md:h-[92vh] bg-slate-900 md:rounded-2xl md:border md:border-slate-800 shadow-2xl flex flex-col overflow-hidden relative">
+
+        <!-- ================= 1. LOGIN SECTION ================= -->
+        <div id="authSection" class="absolute inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
+            <div class="bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-2xl w-full max-w-md shadow-2xl">
+                <div class="text-center mb-6">
+                    <div class="w-12 h-12 bg-indigo-600 rounded-xl mx-auto flex items-center justify-center text-xl font-bold mb-3 shadow-lg shadow-indigo-500/30">🛡️</div>
+                    <h2 class="text-2xl font-bold text-white">Live Tracking</h2>
+                    <p class="text-xs text-slate-400 mt-1">Admin & Employee Authentication</p>
+                </div>
+
+                <!-- Role Selector Tabs -->
+                <div class="flex bg-slate-800 p-1 rounded-xl mb-6">
+                    <button onclick="switchTab('admin')" id="adminTabBtn" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-indigo-600 text-white transition">Admin</button>
+                    <button onclick="switchTab('employee')" id="empTabBtn" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition">Employee</button>
+                </div>
+
+                <!-- Admin Form -->
+                <form id="adminForm" onsubmit="handleAdminLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Username</label>
+                        <input type="text" id="adminUser" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Password</label>
+                        <input type="password" id="adminPass" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-indigo-600/20">Login</button>
+                </form>
+
+                <!-- Employee Form -->
+                <form id="employeeForm" onsubmit="handleEmployeeLogin(event)" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Username</label>
+                        <input type="text" id="loginEmpUser" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Password</label>
+                        <input type="password" id="loginEmpPass" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-emerald-600/20">Log in</button>
+                </form>
             </div>
-
-            <!-- Role Selector Tabs -->
-            <div class="flex bg-slate-800 p-1 rounded-xl mb-6">
-                <button onclick="switchTab('admin')" id="adminTabBtn" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-indigo-600 text-white transition">Admin</button>
-                <button onclick="switchTab('employee')" id="empTabBtn" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition">Employee</button>
-            </div>
-
-            <!-- Admin Form -->
-            <form id="adminForm" onsubmit="handleAdminLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Username</label>
-                    <input type="text" id="adminUser" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Password</label>
-                    <input type="password" id="adminPass" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500">
-                </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-indigo-600/20">Login</button>
-            </form>
-
-            <!-- Employee Form -->
-            <form id="employeeForm" onsubmit="handleEmployeeLogin(event)" class="space-y-4 hidden">
-                <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Username</label>
-                    <input type="text" id="loginEmpUser" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Password</label>
-                    <input type="password" id="loginEmpPass" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500">
-                </div>
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-emerald-600/20">Log in</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- ================= 2. ADMIN DASHBOARD ================= -->
-    <div id="adminDashboard" class="flex flex-col w-full h-full hidden">
-        <header class="bg-slate-800 border-b border-slate-700 px-4 md:px-6 py-3 shrink-0 flex justify-between items-center shadow-md">
-            <div class="flex items-center space-x-3">
-                <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
-                <h1 class="text-base md:text-xl font-bold text-white">Live Tracking</h1>
-            </div>
-            <button onclick="logout()" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs px-3 py-2 rounded-lg font-medium transition">Logout</button>
-        </header>
-
-        <!-- Alert Banner -->
-        <div id="alertBanner" class="bg-red-600 text-white px-4 py-2 text-xs md:text-sm font-semibold flex justify-between items-center hidden shrink-0 animate-pulse">
-            <span id="alertText">⚠️ ALERT: Employee breached geofence boundary!</span>
-            <button onclick="dismissAlert()" class="bg-black/20 px-3 py-1 rounded text-xs hover:bg-black/40">Dismiss</button>
         </div>
 
-        <div class="flex flex-row flex-1 overflow-hidden relative">
-            <!-- Sidebar (Strictly Fixed Left Side for All Devices) -->
-            <aside class="w-44 md:w-64 bg-slate-800 border-r border-slate-700 flex flex-col overflow-y-auto p-2 md:p-4 space-y-1 md:space-y-2 shrink-0 z-20">
-                <p class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 md:mb-2 px-2">DASHBOARD</p>
-                <button onclick="switchAdminTab('new-employee')" id="navNewEmp" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3"><span>➕</span> <span class="truncate">New Employee</span></button>
-                <button onclick="switchAdminTab('location')" id="navLocation" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>📍</span> <span class="truncate">Location</span></button>
-                <button onclick="switchAdminTab('edit-employee')" id="navEditEmp" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>✏️</span> <span class="truncate">Employee Edit</span></button>
-                <button onclick="switchAdminTab('admin-activity')" id="navAdminActivity" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>⚡</span> <span class="truncate">Activity</span></button>
-                <button onclick="switchAdminTab('admin-tasks')" id="navAdminTasks" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>📋</span> <span class="truncate">Daily Task</span></button>
-                <button onclick="switchAdminTab('admin-settings')" id="navAdminSet" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>⚙️</span> <span class="truncate">Settings</span></button>
-            </aside>
-
-            <!-- Content Area -->
-            <main class="flex-1 bg-slate-950 p-4 md:p-6 overflow-y-auto">
-                
-                <!-- NEW EMPLOYEE TAB -->
-                <div id="tabNewEmployee" class="max-w-xl mx-auto bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl">
-                    <h3 class="text-base md:text-lg font-bold text-white mb-4">Add Employee</h3>
-                    <div class="space-y-3">
-                        <input type="text" id="newEmpId" placeholder="Employee ID (e.g. EMP002)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                        <input type="text" id="newEmpName" placeholder="Full Name" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                        <div class="flex space-x-2">
-                            <input type="text" id="newEmpUser" placeholder="Username" class="w-1/2 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                            <input type="text" id="newEmpPass" placeholder="Password" class="w-1/2 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                        </div>
-                        <input type="text" id="newEmpBranch" placeholder="Branch / Site Name" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                        
-                        <div class="flex justify-between items-center pt-1">
-                            <span class="text-xs text-slate-400">GPS Coordinates:</span>
-                            <button onclick="fetchCurrentGPS('new')" class="bg-indigo-600/30 text-indigo-300 hover:bg-indigo-600/50 px-3 py-1 rounded text-xs transition">📍 Get Current GPS Location</button>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="number" step="any" id="allocLat" placeholder="Latitude" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                            <input type="number" step="any" id="allocLng" placeholder="Longitude" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="number" id="allocDutyHours" placeholder="Duty Hours (e.g. 9)" value="9" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                            <input type="text" id="allocBreak" placeholder="Break Time (e.g. 1 Hour)" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                        </div>
-                        <input type="number" id="allocRadius" placeholder="Allowed Radius in Meters" value="50" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                    </div>
-                    <button onclick="saveNewEmployee()" class="w-full mt-5 bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl text-sm font-semibold transition">Save</button>
+        <!-- ================= 2. ADMIN DASHBOARD ================= -->
+        <div id="adminDashboard" class="flex flex-col w-full h-full hidden">
+            <header class="bg-slate-800 border-b border-slate-700 px-4 md:px-6 py-4 flex justify-between items-center shadow-md shrink-0">
+                <div class="flex items-center space-x-3">
+                    <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <h1 class="text-lg md:text-xl font-bold text-white">Live Tracking</h1>
                 </div>
+                <button onclick="logout()" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs px-3 py-2 rounded-lg font-medium transition">Logout</button>
+            </header>
 
-                <!-- LOCATION TAB -->
-                <div id="tabLocation" class="h-full flex flex-col hidden">
-                    <div class="bg-slate-900 px-4 py-2 rounded-t-xl border border-slate-800 flex justify-between items-center text-sm mb-2 shrink-0">
-                        <span id="adminSelectedInfo" class="text-indigo-400 font-medium">Select Employee</span>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 h-[75vh] md:h-full flex-1">
-                        <div class="col-span-1 bg-slate-900 border border-slate-800 p-3 rounded-xl overflow-y-auto space-y-2 max-h-40 md:max-h-full" id="adminEmpList"></div>
-                        <div class="col-span-2 bg-slate-900 rounded-xl border border-slate-800 overflow-hidden shadow-inner flex flex-col h-72 md:h-auto">
-                            <iframe id="googleMapFrame" class="w-full h-full border-0" src="" allowfullscreen="" loading="lazy"></iframe>
-                        </div>
-                    </div>
-                </div>
+            <!-- Alert Banner -->
+            <div id="alertBanner" class="bg-red-600 text-white px-6 py-3 text-sm font-semibold flex justify-between items-center hidden shadow-lg animate-pulse shrink-0">
+                <span id="alertText">⚠️ ALERT: Employee breached geofence boundary!</span>
+                <button onclick="dismissAlert()" class="bg-black/20 px-3 py-1 rounded text-xs hover:bg-black/40">Dismiss</button>
+            </div>
 
-                <!-- EDIT & REMOVE EMPLOYEE TAB -->
-                <div id="tabEditEmployee" class="max-w-2xl mx-auto bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl hidden">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-base md:text-lg font-bold text-white">Edit Details</h3>
-                        <button onclick="removeEmployeeAccount()" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs px-3 py-2 rounded-lg font-medium transition">Remove Employee</button>
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-xs text-slate-400 mb-1">Select Employee</label>
-                        <select id="selectEmpToEdit" onchange="loadEmpDataForEdit()" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                            <option value="">-- Choose Employee --</option>
-                        </select>
-                    </div>
-                    <div class="space-y-3">
-                        <input type="text" id="editEmpName" placeholder="Full Name" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                        <div class="flex space-x-2">
-                            <input type="text" id="editEmpUser" placeholder="Username" class="w-1/2 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                            <input type="text" id="editEmpPass" placeholder="Password" class="w-1/2 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                        </div>
-                        <input type="text" id="editEmpBranch" placeholder="Site Name" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                        <div class="flex justify-between items-center pt-1">
-                            <span class="text-xs text-slate-400">GPS Coordinates:</span>
-                            <button onclick="fetchCurrentGPS('edit')" class="bg-indigo-600/30 text-indigo-300 hover:bg-indigo-600/50 px-3 py-1 rounded text-xs transition">📍 Get Current GPS Location</button>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="number" step="any" id="editLat" placeholder="Latitude" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                            <input type="number" step="any" id="editLng" placeholder="Longitude" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="number" id="editDutyHours" placeholder="Duty Hours" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                            <input type="text" id="editBreak" placeholder="Break Time" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                        </div>
-                        <input type="number" id="editRadius" placeholder="Allowed Radius in Meters" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                    </div>
-                    <button onclick="updateEmployeeDetails()" class="w-full mt-5 bg-emerald-600 hover:bg-emerald-500 py-3 rounded-xl text-sm font-semibold transition">Update</button>
-                </div>
+            <div class="flex flex-row flex-1 overflow-hidden">
+                <!-- Sidebar (Always Left-Side for both Mobile and Desktop) -->
+                <aside class="w-48 md:w-64 bg-slate-800 border-r border-slate-700 flex flex-col overflow-y-auto p-2 md:p-4 space-y-2 shrink-0">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">DASHBOARD</p>
+                    <button onclick="switchAdminTab('new-employee')" id="navNewEmp" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3"><span>➕</span> <span>New Employee</span></button>
+                    <button onclick="switchAdminTab('location')" id="navLocation" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>📍</span> <span>Location</span></button>
+                    <button onclick="switchAdminTab('edit-employee')" id="navEditEmp" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>✏️</span> <span>Employee Edit</span></button>
+                    <button onclick="switchAdminTab('admin-activity')" id="navAdminActivity" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>⚡</span> <span>Activity</span></button>
+                    <button onclick="switchAdminTab('admin-tasks')" id="navAdminTasks" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>📋</span> <span>Daily Task</span></button>
+                    <button onclick="switchAdminTab('admin-settings')" id="navAdminSet" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>⚙️</span> <span>Settings</span></button>
+                </aside>
 
-                <!-- ADMIN ACTIVITY TAB -->
-                <div id="tabAdminActivity" class="max-w-3xl mx-auto bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl hidden space-y-4">
-                    <h3 class="text-base md:text-lg font-bold text-white mb-2">⚡ Employee Live Activity Logs</h3>
-                    <p class="text-xs text-slate-400 mb-4">Real-time tracking of employee punch-in, punch-out, and break status.</p>
-                    <div class="space-y-3" id="adminActivityContainer">
-                        <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-xs text-slate-400 text-center">No activity recorded yet.</div>
-                    </div>
-                </div>
-
-                <!-- DAILY TASK TAB -->
-                <div id="tabAdminTasks" class="max-w-5xl mx-auto bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl hidden space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-slate-950 border border-slate-800 p-5 rounded-xl space-y-3">
-                            <h3 class="text-md font-bold text-white">📌 Admin Assigned Target</h3>
-                            <select id="assignEmpSelect" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                                <option value="">-- Choose Employee --</option>
-                            </select>
-                            <input type="date" id="adminTargetDate" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                            <textarea id="adminCustomTask" rows="3" placeholder="Type target description..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-sm text-white"></textarea>
-                            <button onclick="createNewTask()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-2.5 rounded-lg text-sm font-semibold transition">Assign Target</button>
+                <!-- Content Area -->
+                <main class="flex-1 bg-slate-950 p-4 md:p-6 overflow-y-auto">
+                    
+                    <!-- NEW EMPLOYEE TAB -->
+                    <div id="tabNewEmployee" class="max-w-xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl">
+                        <h3 class="text-lg font-bold text-white mb-4">Add Employee</h3>
+                        <div class="space-y-3">
+                            <input type="text" id="newEmpId" placeholder="Employee ID (e.g. EMP002)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                            <input type="text" id="newEmpName" placeholder="Full Name" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                            <div class="flex space-x-2">
+                                <input type="text" id="newEmpUser" placeholder="Username" class="w-1/2 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                                <input type="text" id="newEmpPass" placeholder="Password" class="w-1/2 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                            </div>
+                            <input type="text" id="newEmpBranch" placeholder="Branch / Site Name" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                            
+                            <div class="flex justify-between items-center pt-1">
+                                <span class="text-xs text-slate-400">GPS Coordinates:</span>
+                                <button onclick="fetchCurrentGPS('new')" class="bg-indigo-600/30 text-indigo-300 hover:bg-indigo-600/50 px-3 py-1 rounded text-xs transition">📍 Get Current GPS Location</button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="number" step="any" id="allocLat" placeholder="Latitude" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                                <input type="number" step="any" id="allocLng" placeholder="Longitude" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="number" id="allocDutyHours" placeholder="Duty Hours (e.g. 9)" value="9" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                                <input type="text" id="allocBreak" placeholder="Break Time (e.g. 1 Hour)" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                            </div>
+                            <input type="number" id="allocRadius" placeholder="Allowed Radius in Meters" value="50" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
                         </div>
-                        <div class="bg-slate-950 border border-slate-800 p-5 rounded-xl space-y-3">
-                            <h3 class="text-md font-bold text-white">📋 Employee Day-wise Report</h3>
-                            <div class="space-y-3 max-h-[300px] overflow-y-auto" id="adminTaskListContainer">
-                                <div class="bg-slate-900 p-4 rounded-xl text-xs text-slate-400 text-center">No task reports submitted yet.</div>
+                        <button onclick="saveNewEmployee()" class="w-full mt-5 bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl text-sm font-semibold transition">Save</button>
+                    </div>
+
+                    <!-- LOCATION TAB -->
+                    <div id="tabLocation" class="h-full flex flex-col hidden">
+                        <div class="bg-slate-900 px-4 py-2 rounded-t-xl border border-slate-800 flex justify-between items-center text-sm mb-2">
+                            <span id="adminSelectedInfo" class="text-indigo-400 font-medium">Select Employee</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 h-[75vh] md:h-full">
+                            <div class="col-span-1 bg-slate-900 border border-slate-800 p-3 rounded-xl overflow-y-auto space-y-2 max-h-48 md:max-h-full" id="adminEmpList"></div>
+                            <div class="col-span-2 bg-slate-900 rounded-xl border border-slate-800 overflow-hidden shadow-inner flex flex-col h-64 md:h-auto">
+                                <iframe id="googleMapFrame" class="w-full h-full border-0" src="" allowfullscreen="" loading="lazy"></iframe>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- SETTINGS TAB -->
-                <div id="tabAdminSettings" class="max-w-xl mx-auto bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl hidden">
-                    <h3 class="text-base md:text-lg font-bold text-white mb-2">Profile Edit</h3>
-                    <div class="space-y-3">
-                        <input type="text" id="currentAdminUser" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-white">
-                        <input type="password" id="currentAdminPass" placeholder="Enter new password" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-white">
+                    <!-- EDIT & REMOVE EMPLOYEE TAB -->
+                    <div id="tabEditEmployee" class="max-w-2xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-white">Edit Details</h3>
+                            <button onclick="removeEmployeeAccount()" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs px-3 py-2 rounded-lg font-medium transition">Remove Employee</button>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-xs text-slate-400 mb-1">Select Employee</label>
+                            <select id="selectEmpToEdit" onchange="loadEmpDataForEdit()" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                                <option value="">-- Choose Employee --</option>
+                            </select>
+                        </div>
+                        <div class="space-y-3">
+                            <input type="text" id="editEmpName" placeholder="Full Name" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                            <div class="flex space-x-2">
+                                <input type="text" id="editEmpUser" placeholder="Username" class="w-1/2 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                                <input type="text" id="editEmpPass" placeholder="Password" class="w-1/2 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                            </div>
+                            <input type="text" id="editEmpBranch" placeholder="Site Name" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                            <div class="flex justify-between items-center pt-1">
+                                <span class="text-xs text-slate-400">GPS Coordinates:</span>
+                                <button onclick="fetchCurrentGPS('edit')" class="bg-indigo-600/30 text-indigo-300 hover:bg-indigo-600/50 px-3 py-1 rounded text-xs transition">📍 Get Current GPS Location</button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="number" step="any" id="editLat" placeholder="Latitude" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                                <input type="number" step="any" id="editLng" placeholder="Longitude" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="number" id="editDutyHours" placeholder="Duty Hours" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                                <input type="text" id="editBreak" placeholder="Break Time" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                            </div>
+                            <input type="number" id="editRadius" placeholder="Allowed Radius in Meters" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                        </div>
+                        <button onclick="updateEmployeeDetails()" class="w-full mt-5 bg-emerald-600 hover:bg-emerald-500 py-3 rounded-xl text-sm font-semibold transition">Update</button>
                     </div>
-                    <button onclick="saveAdminSettings()" class="w-full mt-5 bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl text-sm font-semibold transition">Save</button>
-                </div>
-            </main>
-        </div>
-    </div>
 
-    <!-- ================= 3. EMPLOYEE DASHBOARD ================= -->
-    <div id="employeeDashboard" class="flex flex-col w-full h-full hidden">
-        <header class="bg-slate-800 border-b border-slate-700 px-4 md:px-6 py-3 shrink-0 flex justify-between items-center shadow-md">
-            <div class="flex items-center space-x-3">
-                <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
-                <h1 class="text-base md:text-xl font-bold text-white" id="welcomeEmpName">Employee Portal</h1>
+                    <!-- ADMIN ACTIVITY TAB -->
+                    <div id="tabAdminActivity" class="max-w-3xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden space-y-4">
+                        <h3 class="text-lg font-bold text-white mb-2">⚡ Employee Live Activity Logs</h3>
+                        <p class="text-xs text-slate-400 mb-4">Real-time tracking of employee punch-in, punch-out, and break status.</p>
+                        <div class="space-y-3" id="adminActivityContainer">
+                            <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-xs text-slate-400 text-center">No activity recorded yet.</div>
+                        </div>
+                    </div>
+
+                    <!-- DAILY TASK TAB -->
+                    <div id="tabAdminTasks" class="max-w-5xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-slate-950 border border-slate-800 p-5 rounded-xl space-y-3">
+                                <h3 class="text-md font-bold text-white">📌 Admin Assigned Target</h3>
+                                <select id="assignEmpSelect" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                                    <option value="">-- Choose Employee --</option>
+                                </select>
+                                <input type="date" id="adminTargetDate" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                                <textarea id="adminCustomTask" rows="3" placeholder="Type target description..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-sm text-white"></textarea>
+                                <button onclick="createNewTask()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-2.5 rounded-lg text-sm font-semibold transition">Assign Target</button>
+                            </div>
+                            <div class="bg-slate-950 border border-slate-800 p-5 rounded-xl space-y-3">
+                                <h3 class="text-md font-bold text-white">📋 Employee Day-wise Report</h3>
+                                <div class="space-y-3 max-h-[300px] overflow-y-auto" id="adminTaskListContainer">
+                                    <div class="bg-slate-900 p-4 rounded-xl text-xs text-slate-400 text-center">No task reports submitted yet.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SETTINGS TAB -->
+                    <div id="tabAdminSettings" class="max-w-xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden">
+                        <h3 class="text-lg font-bold text-white mb-2">Profile Edit</h3>
+                        <div class="space-y-3">
+                            <input type="text" id="currentAdminUser" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-white">
+                            <input type="password" id="currentAdminPass" placeholder="Enter new password" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-white">
+                        </div>
+                        <button onclick="saveAdminSettings()" class="w-full mt-5 bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl text-sm font-semibold transition">Save</button>
+                    </div>
+                </main>
             </div>
-            <button onclick="logout()" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs px-3 py-2 rounded-lg font-medium transition">Logout</button>
-        </header>
+        </div>
 
-        <div class="flex flex-row flex-1 overflow-hidden relative">
-            <!-- Sidebar (Strictly Fixed Left Side for All Devices) -->
-            <aside class="w-44 md:w-64 bg-slate-800 border-r border-slate-700 flex flex-col overflow-y-auto p-2 md:p-4 space-y-1 md:space-y-2 shrink-0 z-20">
-                <p class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 md:mb-2 px-2">DASHBORAD</p>
-                <button onclick="switchEmpTab('attendance')" id="navEmpAtt" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3"><span>📅</span> <span class="truncate">Attendance</span></button>
-                <button onclick="switchEmpTab('break')" id="navEmpBreak" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>☕</span> <span class="truncate">Break Time</span></button>
-                <button onclick="switchEmpTab('leave')" id="navEmpLeave" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>📝</span> <span class="truncate">Leave Request</span></button>
-                <button onclick="switchEmpTab('task')" id="navEmpTask" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>📋</span> <span class="truncate">Daily Task</span></button>
-                <button onclick="switchEmpTab('settings')" id="navEmpSet" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>⚙️</span> <span class="truncate">Settings</span></button>
-            </aside>
+        <!-- ================= 3. EMPLOYEE DASHBOARD ================= -->
+        <div id="employeeDashboard" class="flex flex-col w-full h-full hidden">
+            <header class="bg-slate-800 border-b border-slate-700 px-4 md:px-6 py-4 flex justify-between items-center shadow-md shrink-0">
+                <div class="flex items-center space-x-3">
+                    <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <h1 class="text-lg md:text-xl font-bold text-white" id="welcomeEmpName">Employee Portal</h1>
+                </div>
+                <button onclick="logout()" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs px-3 py-2 rounded-lg font-medium transition">Logout</button>
+            </header>
 
-            <!-- Content Area -->
-            <main class="flex-1 bg-slate-950 p-4 md:p-6 overflow-y-auto flex items-center justify-center">
-                
-                <!-- ATTENDANCE TAB -->
-                <div id="empTabAttendance" class="max-w-md w-full bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl text-center shadow-xl space-y-4">
-                    <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-xl">📍</div>
-                    <h2 class="text-lg font-bold text-white">Attendance </h2>
+            <div class="flex flex-row flex-1 overflow-hidden">
+                <!-- Sidebar -->
+                <aside class="w-48 md:w-64 bg-slate-800 border-r border-slate-700 flex flex-col overflow-y-auto p-2 md:p-4 space-y-2 shrink-0">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">DASHBORAD</p>
+                    <button onclick="switchEmpTab('attendance')" id="navEmpAtt" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3"><span>📅</span> <span>Attendance</span></button>
+                    <button onclick="switchEmpTab('break')" id="navEmpBreak" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>☕</span> <span>Break Time</span></button>
+                    <button onclick="switchEmpTab('leave')" id="navEmpLeave" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>📝</span> <span>Leave Request</span></button>
+                    <button onclick="switchEmpTab('task')" id="navEmpTask" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>📋</span> <span>Daily Task</span></button>
+                    <button onclick="switchEmpTab('settings')" id="navEmpSet" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>⚙️</span> <span>Settings</span></button>
+                </aside>
+
+                <!-- Content Area -->
+                <main class="flex-1 bg-slate-950 p-4 md:p-6 overflow-y-auto flex items-center justify-center">
                     
-                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-left space-y-2 text-xs">
-                        <div class="flex justify-between"><span class="text-slate-400">Assigned Branch:</span> <span id="assignedBranchVal" class="text-indigo-400 font-bold">---</span></div>
-                        <div class="flex justify-between"><span class="text-slate-400">Total Duty Hours:</span> <span id="empDutyVal" class="text-white font-bold">---</span></div>
-                        <div class="flex justify-between"><span class="text-slate-400">Remaining Time:</span> <span id="empRemainingTimer" class="text-emerald-400 font-bold text-sm">Not Started</span></div>
-                        <div class="flex justify-between"><span class="text-slate-400">Geofence Status:</span> <span id="fenceStatusVal" class="text-emerald-400 font-bold">Inside Zone</span></div>
-                    </div>
+                    <!-- ATTENDANCE TAB -->
+                    <div id="empTabAttendance" class="max-w-md w-full bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center shadow-xl space-y-4">
+                        <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-xl">📍</div>
+                        <h2 class="text-lg font-bold text-white">Attendance </h2>
+                        
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-left space-y-2 text-xs">
+                            <div class="flex justify-between"><span class="text-slate-400">Assigned Branch:</span> <span id="assignedBranchVal" class="text-indigo-400 font-bold">---</span></div>
+                            <div class="flex justify-between"><span class="text-slate-400">Total Duty Hours:</span> <span id="empDutyVal" class="text-white font-bold">---</span></div>
+                            <div class="flex justify-between"><span class="text-slate-400">Remaining Time:</span> <span id="empRemainingTimer" class="text-emerald-400 font-bold text-sm">Not Started</span></div>
+                            <div class="flex justify-between"><span class="text-slate-400">Geofence Status:</span> <span id="fenceStatusVal" class="text-emerald-400 font-bold">Inside Zone</span></div>
+                        </div>
 
-                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
-                        <span id="punchStatusText" class="text-xs font-bold text-slate-400">Status: Not Punched In</span>
-                        <div class="flex space-x-2">
-                            <button onclick="punchIn()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 py-2.5 rounded-lg text-xs font-semibold transition">Punch In</button>
-                            <button onclick="punchOut()" class="flex-1 bg-red-600 hover:bg-red-500 py-2.5 rounded-lg text-xs font-semibold transition">Punch Out</button>
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+                            <span id="punchStatusText" class="text-xs font-bold text-slate-400">Status: Not Punched In</span>
+                            <div class="flex space-x-2">
+                                <button onclick="punchIn()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 py-2.5 rounded-lg text-xs font-semibold transition">Punch In</button>
+                                <button onclick="punchOut()" class="flex-1 bg-red-600 hover:bg-red-500 py-2.5 rounded-lg text-xs font-semibold transition">Punch Out</button>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- BREAK TIME TAB -->
-                <div id="empTabBreak" class="max-w-md w-full bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-2xl text-center shadow-xl hidden space-y-4">
-                    <h3 class="text-lg font-bold text-white mb-2">Break Time</h3>
-                    <p class="text-xs text-slate-400">Starting break will pause your duty hours timer.</p>
-                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
-                        <span class="text-xs text-slate-400">Current Status:</span>
-                        <p id="breakStatusText" class="text-base font-bold text-emerald-400 mt-1">On Shift (Working)</p>
+                    <!-- BREAK TIME TAB -->
+                    <div id="empTabBreak" class="max-w-md w-full bg-slate-900 border border-slate-800 p-8 rounded-2xl text-center shadow-xl hidden space-y-4">
+                        <h3 class="text-lg font-bold text-white mb-2">Break Time</h3>
+                        <p class="text-xs text-slate-400">Starting break will pause your duty hours timer.</p>
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400">Current Status:</span>
+                            <p id="breakStatusText" class="text-base font-bold text-emerald-400 mt-1">On Shift (Working)</p>
+                        </div>
+                        <button onclick="toggleBreakTime()" id="breakToggleBtn" class="w-full bg-amber-600 hover:bg-amber-500 py-3 rounded-xl text-sm font-semibold transition">Start Break</button>
                     </div>
-                    <button onclick="toggleBreakTime()" id="breakToggleBtn" class="w-full bg-amber-600 hover:bg-amber-500 py-3 rounded-xl text-sm font-semibold transition">Start Break</button>
-                </div>
 
-                <!-- LEAVE TAB -->
-                <div id="empTabLeave" class="max-w-md w-full bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl hidden text-left space-y-3">
-                    <h3 class="text-lg font-bold text-white mb-2 text-center">Submit Leave Request</h3>
-                    <input type="date" id="leaveDate" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                    <textarea id="leaveReason" rows="3" placeholder="Enter reason..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white"></textarea>
-                    <button onclick="submitLeaveRequest()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl text-sm font-semibold transition">Send Request</button>
-                </div>
+                    <!-- LEAVE TAB -->
+                    <div id="empTabLeave" class="max-w-md w-full bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden text-left space-y-3">
+                        <h3 class="text-lg font-bold text-white mb-2 text-center">Submit Leave Request</h3>
+                        <input type="date" id="leaveDate" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                        <textarea id="leaveReason" rows="3" placeholder="Enter reason..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white"></textarea>
+                        <button onclick="submitLeaveRequest()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl text-sm font-semibold transition">Send Request</button>
+                    </div>
 
-                <!-- DAILY TASK TAB -->
-                <div id="empTabTask" class="max-w-lg w-full bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl hidden text-left space-y-4 max-h-[85vh] overflow-y-auto">
-                    <h3 class="text-lg font-bold text-white text-center">Daily Task & Day-wise Reports</h3>
-                    <div class="bg-indigo-950/60 border border-indigo-500/40 p-4 rounded-xl">
-                        <span class="text-[10px] uppercase tracking-wider font-bold text-indigo-400">🎯 Today Target</span>
-                        <p id="todayTargetDisplay" class="text-sm font-bold text-white mt-1">No target assigned for today.</p>
-                    </div>
-                    <div class="space-y-3 border-t border-slate-800 pt-3">
-                        <h4 class="text-xs font-bold text-slate-400 uppercase">Submit Today's Report</h4>
-                        <input type="date" id="taskReportDate" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                        <input type="text" id="taskTitle" placeholder="Report Title" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                        <textarea id="taskSummary" rows="2" placeholder="Work summary..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white"></textarea>
-                        <button onclick="submitDailyTask()" class="w-full bg-emerald-600 hover:bg-emerald-500 py-2.5 rounded-lg text-sm font-semibold transition">Submit Report</button>
-                    </div>
-                    <div class="border-t border-slate-800 pt-3 space-y-2">
-                        <h4 class="text-xs font-bold text-slate-400 uppercase">Your Day-wise Report History</h4>
-                        <div id="empTaskHistoryList" class="space-y-2">
-                            <div class="bg-slate-950 p-3 rounded-xl text-xs text-slate-400 text-center">No reports submitted yet.</div>
+                    <!-- DAILY TASK TAB -->
+                    <div id="empTabTask" class="max-w-lg w-full bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden text-left space-y-4 max-h-[85vh] overflow-y-auto">
+                        <h3 class="text-lg font-bold text-white text-center">Daily Task & Day-wise Reports</h3>
+                        <div class="bg-indigo-950/60 border border-indigo-500/40 p-4 rounded-xl">
+                            <span class="text-[10px] uppercase tracking-wider font-bold text-indigo-400">🎯 Today Target</span>
+                            <p id="todayTargetDisplay" class="text-sm font-bold text-white mt-1">No target assigned for today.</p>
+                        </div>
+                        <div class="space-y-3 border-t border-slate-800 pt-3">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase">Submit Today's Report</h4>
+                            <input type="date" id="taskReportDate" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                            <input type="text" id="taskTitle" placeholder="Report Title" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                            <textarea id="taskSummary" rows="2" placeholder="Work summary..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white"></textarea>
+                            <button onclick="submitDailyTask()" class="w-full bg-emerald-600 hover:bg-emerald-500 py-2.5 rounded-lg text-sm font-semibold transition">Submit Report</button>
+                        </div>
+                        <div class="border-t border-slate-800 pt-3 space-y-2">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase">Your Day-wise Report History</h4>
+                            <div id="empTaskHistoryList" class="space-y-2">
+                                <div class="bg-slate-950 p-3 rounded-xl text-xs text-slate-400 text-center">No reports submitted yet.</div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- SETTINGS TAB -->
-                <div id="empTabSettings" class="max-w-md w-full bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl hidden text-left space-y-3">
-                    <h3 class="text-lg font-bold text-white mb-2 text-center">Employee Details</h3>
-                    <input type="text" id="empSettingUser" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                    <input type="password" id="empSettingPass" placeholder="New password" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                    <button onclick="saveEmpSettings()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl text-sm font-semibold transition">Save</button>
-                </div>
+                    <!-- SETTINGS TAB -->
+                    <div id="empTabSettings" class="max-w-md w-full bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden text-left space-y-3">
+                        <h3 class="text-lg font-bold text-white mb-2 text-center">Employee Details</h3>
+                        <input type="text" id="empSettingUser" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                        <input type="password" id="empSettingPass" placeholder="New password" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                        <button onclick="saveEmpSettings()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl text-sm font-semibold transition">Save</button>
+                    </div>
 
-            </main>
+                </main>
+            </div>
         </div>
     </div>
 
@@ -337,6 +337,53 @@
         let isOnBreak = false;
         let globalTrackingInterval = null;
 
+        // Restore current session and active tab on page refresh
+        window.addEventListener('DOMContentLoaded', () => {
+            let activeRole = localStorage.getItem('active_role');
+            let activeAdminTab = localStorage.getItem('active_admin_tab') || 'new-employee';
+            let activeEmpTab = localStorage.getItem('active_emp_tab') || 'attendance';
+            let activeEmpId = localStorage.getItem('active_logged_in_emp');
+
+            if (activeRole === 'admin') {
+                document.getElementById('authSection').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                document.getElementById('currentAdminUser').value = adminAuth.user;
+                document.getElementById('currentAdminPass').value = adminAuth.pass;
+                renderAdminList();
+                populateEditDropdown();
+                populateAssignEmpDropdown();
+                renderAdminTasks();
+                renderAdminActivity();
+                switchAdminTab(activeAdminTab);
+                setInterval(checkAdminAlerts, 3000);
+            } else if (activeRole === 'employee' && activeEmpId) {
+                let emp = employees.find(e => e.id === activeEmpId);
+                if (emp) {
+                    loggedInEmp = emp;
+                    document.getElementById('authSection').classList.add('hidden');
+                    document.getElementById('employeeDashboard').classList.remove('hidden');
+                    document.getElementById('welcomeEmpName').innerText = `Welcome, ${emp.name}`;
+                    document.getElementById('assignedBranchVal').innerText = emp.branch;
+                    document.getElementById('empDutyVal').innerText = `${emp.dutyHours || 9} Hours`;
+                    document.getElementById('empSettingUser').value = emp.username;
+                    document.getElementById('empSettingPass').value = emp.pass;
+                    document.getElementById('todayTargetDisplay').innerText = emp.todayTarget || 'No target assigned yet.';
+                    
+                    if(localStorage.getItem('punched_in_' + emp.id) === 'true') {
+                        isPuncedIn = true;
+                        document.getElementById('punchStatusText').innerText = `Punched In Active`;
+                        document.getElementById('punchStatusText').className = "text-xs font-bold text-emerald-400";
+                    }
+
+                    let todayStr = new Date().toISOString().split('T')[0];
+                    document.getElementById('taskReportDate').value = todayStr;
+                    renderEmpTaskHistory();
+                    switchEmpTab(activeEmpTab);
+                    initBackgroundTracking();
+                }
+            }
+        });
+
         function fetchCurrentGPS(mode) {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition((pos) => {
@@ -351,7 +398,7 @@
                     }
                     alert('Current GPS location captured successfully!');
                 }, (err) => {
-                    alert('GPS Error: ' + err.message + '. Please ensure location services are enabled.');
+                    alert('GPS Error: ' + err.message);
                 }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
             } else {
                 alert('Geolocation is not supported by this browser.');
@@ -382,17 +429,13 @@
                                 allEmps[index].currLng = cLng;
                                 allEmps[index].status = isOutside ? 'Breached (Dismissed)' : 'Active (Inside)';
                                 localStorage.setItem('geofence_employees', JSON.stringify(allEmps));
-                                
                                 updateGoogleMapFrame(allEmps[index]);
                             }
                         }
-                    }, (err) => {
-                        console.warn('Background tracking GPS warning: ' + err.message);
-                    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+                    }, () => {}, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
                 }, 10000);
             }
         }
-        initBackgroundTracking();
 
         function switchTab(role) {
             if(role === 'admin') {
@@ -413,6 +456,7 @@
             const u = document.getElementById('adminUser').value;
             const p = document.getElementById('adminPass').value;
             if(u === adminAuth.user && p === adminAuth.pass) {
+                localStorage.setItem('active_role', 'admin');
                 document.getElementById('authSection').classList.add('hidden');
                 document.getElementById('adminDashboard').classList.remove('hidden');
                 document.getElementById('currentAdminUser').value = adminAuth.user;
@@ -422,7 +466,7 @@
                 populateAssignEmpDropdown();
                 renderAdminTasks();
                 renderAdminActivity();
-                checkAdminAlerts();
+                switchAdminTab('new-employee');
                 setInterval(checkAdminAlerts, 3000);
             } else {
                 alert('Invalid Admin credentials!');
@@ -439,6 +483,7 @@
             
             if(emp) {
                 loggedInEmp = emp;
+                localStorage.setItem('active_role', 'employee');
                 localStorage.setItem('active_logged_in_emp', emp.id);
                 document.getElementById('authSection').classList.add('hidden');
                 document.getElementById('employeeDashboard').classList.remove('hidden');
@@ -458,70 +503,77 @@
                 let todayStr = new Date().toISOString().split('T')[0];
                 document.getElementById('taskReportDate').value = todayStr;
                 renderEmpTaskHistory();
+                switchEmpTab('attendance');
+                initBackgroundTracking();
             } else {
                 alert('Invalid Username or Password! Please check your credentials.');
             }
         }
 
         function logout() { 
+            localStorage.removeItem('active_role');
             localStorage.removeItem('active_logged_in_emp');
+            localStorage.removeItem('active_admin_tab');
+            localStorage.removeItem('active_emp_tab');
             location.reload(); 
         }
 
         function switchAdminTab(tabName) {
+            localStorage.setItem('active_admin_tab', tabName);
             ['tabNewEmployee', 'tabLocation', 'tabEditEmployee', 'tabAdminActivity', 'tabAdminTasks', 'tabAdminSettings'].forEach(t => document.getElementById(t).classList.add('hidden'));
             ['navNewEmp', 'navLocation', 'navEditEmp', 'navAdminActivity', 'navAdminTasks', 'navAdminSet'].forEach(n => {
-                document.getElementById(n).className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3";
+                document.getElementById(n).className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3";
             });
 
             if(tabName === 'new-employee') {
                 document.getElementById('tabNewEmployee').classList.remove('hidden');
-                document.getElementById('navNewEmp').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
+                document.getElementById('navNewEmp').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
             } else if(tabName === 'location') {
                 document.getElementById('tabLocation').classList.remove('hidden');
-                document.getElementById('navLocation').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
+                document.getElementById('navLocation').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 setTimeout(() => { renderAdminList(); }, 200);
             } else if(tabName === 'edit-employee') {
                 document.getElementById('tabEditEmployee').classList.remove('hidden');
-                document.getElementById('navEditEmp').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
+                document.getElementById('navEditEmp').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 populateEditDropdown();
             } else if(tabName === 'admin-activity') {
                 document.getElementById('tabAdminActivity').classList.remove('hidden');
-                document.getElementById('navAdminActivity').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
+                document.getElementById('navAdminActivity').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 renderAdminActivity();
             } else if(tabName === 'admin-tasks') {
                 document.getElementById('tabAdminTasks').classList.remove('hidden');
-                document.getElementById('navAdminTasks').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
+                document.getElementById('navAdminTasks').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 populateAssignEmpDropdown();
                 renderAdminTasks();
             } else if(tabName === 'admin-settings') {
                 document.getElementById('tabAdminSettings').classList.remove('hidden');
-                document.getElementById('navAdminSet').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
+                document.getElementById('navAdminSet').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
             }
         }
 
         function switchEmpTab(tabName) {
+            localStorage.setItem('active_emp_tab', tabName);
             ['empTabAttendance', 'empTabBreak', 'empTabLeave', 'empTabTask', 'empTabSettings'].forEach(t => document.getElementById(t).classList.add('hidden'));
             ['navEmpAtt', 'navEmpBreak', 'navEmpLeave', 'navEmpTask', 'navEmpSet'].forEach(n => {
-                document.getElementById(n).className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3";
+                document.getElementById(n).className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3";
             });
 
             if(tabName === 'attendance') {
                 document.getElementById('empTabAttendance').classList.remove('hidden');
-                document.getElementById('navEmpAtt').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
+                document.getElementById('navEmpAtt').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
             } else if(tabName === 'break') {
                 document.getElementById('empTabBreak').classList.remove('hidden');
-                document.getElementById('navEmpBreak').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
+                document.getElementById('navEmpBreak').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
             } else if(tabName === 'leave') {
                 document.getElementById('empTabLeave').classList.remove('hidden');
-                document.getElementById('navEmpLeave').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
+                document.getElementById('navEmpLeave').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
             } else if(tabName === 'task') {
                 document.getElementById('empTabTask').classList.remove('hidden');
-                document.getElementById('navEmpTask').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
+                document.getElementById('navEmpTask').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 renderEmpTaskHistory();
             } else if(tabName === 'settings') {
                 document.getElementById('empTabSettings').classList.remove('hidden');
-                document.getElementById('navEmpSet').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
+                document.getElementById('navEmpSet').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
             }
         }
 
