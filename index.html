@@ -76,10 +76,10 @@
             </div>
 
             <div class="flex flex-row flex-1 overflow-hidden">
-                <!-- Sidebar (Always Left-Side for both Mobile and Desktop) -->
+                <!-- Sidebar -->
                 <aside class="w-48 md:w-64 bg-slate-800 border-r border-slate-700 flex flex-col overflow-y-auto p-2 md:p-4 space-y-2 shrink-0">
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">DASHBOARD</p>
-                    <button onclick="switchAdminTab('new-employee')" id="navNewEmp" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3"><span>➕</span> <span>New Employee</span></button>
+                    <button onclick="switchAdminTab('new-employee')" id="navNewEmp" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>➕</span> <span>New Employee</span></button>
                     <button onclick="switchAdminTab('location')" id="navLocation" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>📍</span> <span>Location</span></button>
                     <button onclick="switchAdminTab('edit-employee')" id="navEditEmp" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>✏️</span> <span>Employee Edit</span></button>
                     <button onclick="switchAdminTab('admin-activity')" id="navAdminActivity" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>⚡</span> <span>Activity</span></button>
@@ -91,7 +91,7 @@
                 <main class="flex-1 bg-slate-950 p-4 md:p-6 overflow-y-auto">
                     
                     <!-- NEW EMPLOYEE TAB -->
-                    <div id="tabNewEmployee" class="max-w-xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl">
+                    <div id="tabNewEmployee" class="max-w-xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden">
                         <h3 class="text-lg font-bold text-white mb-4">Add Employee</h3>
                         <div class="space-y-3">
                             <input type="text" id="newEmpId" placeholder="Employee ID (e.g. EMP002)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
@@ -225,7 +225,7 @@
                 <!-- Sidebar -->
                 <aside class="w-48 md:w-64 bg-slate-800 border-r border-slate-700 flex flex-col overflow-y-auto p-2 md:p-4 space-y-2 shrink-0">
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">DASHBORAD</p>
-                    <button onclick="switchEmpTab('attendance')" id="navEmpAtt" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3"><span>📅</span> <span>Attendance</span></button>
+                    <button onclick="switchEmpTab('attendance')" id="navEmpAtt" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>📅</span> <span>Attendance</span></button>
                     <button onclick="switchEmpTab('break')" id="navEmpBreak" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>☕</span> <span>Break Time</span></button>
                     <button onclick="switchEmpTab('leave')" id="navEmpLeave" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>📝</span> <span>Leave Request</span></button>
                     <button onclick="switchEmpTab('task')" id="navEmpTask" class="text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>📋</span> <span>Daily Task</span></button>
@@ -236,7 +236,7 @@
                 <main class="flex-1 bg-slate-950 p-4 md:p-6 overflow-y-auto flex items-center justify-center">
                     
                     <!-- ATTENDANCE TAB -->
-                    <div id="empTabAttendance" class="max-w-md w-full bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center shadow-xl space-y-4">
+                    <div id="empTabAttendance" class="max-w-md w-full bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center shadow-xl space-y-4 hidden">
                         <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-xl">📍</div>
                         <h2 class="text-lg font-bold text-white">Attendance </h2>
                         
@@ -337,7 +337,7 @@
         let isOnBreak = false;
         let globalTrackingInterval = null;
 
-        // Restore current session and active tab on page refresh
+        // Persistent State Restoration on page refresh
         window.addEventListener('DOMContentLoaded', () => {
             let activeRole = localStorage.getItem('active_role');
             let activeAdminTab = localStorage.getItem('active_admin_tab') || 'new-employee';
@@ -357,6 +357,7 @@
                 switchAdminTab(activeAdminTab);
                 setInterval(checkAdminAlerts, 3000);
             } else if (activeRole === 'employee' && activeEmpId) {
+                employees = JSON.parse(localStorage.getItem('geofence_employees')) || defaultEmployees;
                 let emp = employees.find(e => e.id === activeEmpId);
                 if (emp) {
                     loggedInEmp = emp;
@@ -521,59 +522,42 @@
         function switchAdminTab(tabName) {
             localStorage.setItem('active_admin_tab', tabName);
             ['tabNewEmployee', 'tabLocation', 'tabEditEmployee', 'tabAdminActivity', 'tabAdminTasks', 'tabAdminSettings'].forEach(t => document.getElementById(t).classList.add('hidden'));
-            ['navNewEmp', 'navLocation', 'navEditEmp', 'navAdminActivity', 'navAdminTasks', 'navAdminSet'].forEach(n => {
-                document.getElementById(n).className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3";
-            });
-
+            
             if(tabName === 'new-employee') {
                 document.getElementById('tabNewEmployee').classList.remove('hidden');
-                document.getElementById('navNewEmp').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
             } else if(tabName === 'location') {
                 document.getElementById('tabLocation').classList.remove('hidden');
-                document.getElementById('navLocation').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 setTimeout(() => { renderAdminList(); }, 200);
             } else if(tabName === 'edit-employee') {
                 document.getElementById('tabEditEmployee').classList.remove('hidden');
-                document.getElementById('navEditEmp').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 populateEditDropdown();
             } else if(tabName === 'admin-activity') {
                 document.getElementById('tabAdminActivity').classList.remove('hidden');
-                document.getElementById('navAdminActivity').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 renderAdminActivity();
             } else if(tabName === 'admin-tasks') {
                 document.getElementById('tabAdminTasks').classList.remove('hidden');
-                document.getElementById('navAdminTasks').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 populateAssignEmpDropdown();
                 renderAdminTasks();
             } else if(tabName === 'admin-settings') {
                 document.getElementById('tabAdminSettings').classList.remove('hidden');
-                document.getElementById('navAdminSet').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
             }
         }
 
         function switchEmpTab(tabName) {
             localStorage.setItem('active_emp_tab', tabName);
             ['empTabAttendance', 'empTabBreak', 'empTabLeave', 'empTabTask', 'empTabSettings'].forEach(t => document.getElementById(t).classList.add('hidden'));
-            ['navEmpAtt', 'navEmpBreak', 'navEmpLeave', 'navEmpTask', 'navEmpSet'].forEach(n => {
-                document.getElementById(n).className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3";
-            });
 
             if(tabName === 'attendance') {
                 document.getElementById('empTabAttendance').classList.remove('hidden');
-                document.getElementById('navEmpAtt').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
             } else if(tabName === 'break') {
                 document.getElementById('empTabBreak').classList.remove('hidden');
-                document.getElementById('navEmpBreak').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
             } else if(tabName === 'leave') {
                 document.getElementById('empTabLeave').classList.remove('hidden');
-                document.getElementById('navEmpLeave').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
             } else if(tabName === 'task') {
                 document.getElementById('empTabTask').classList.remove('hidden');
-                document.getElementById('navEmpTask').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 renderEmpTaskHistory();
             } else if(tabName === 'settings') {
                 document.getElementById('empTabSettings').classList.remove('hidden');
-                document.getElementById('navEmpSet').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
             }
         }
 
