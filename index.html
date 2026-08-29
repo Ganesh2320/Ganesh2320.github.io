@@ -171,33 +171,16 @@
                     <!-- ADMIN ACTIVITY TAB -->
                     <div id="tabAdminActivity" class="max-w-4xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden space-y-4">
                         <h3 class="text-lg font-bold text-white mb-2">⚡ Employee Live Activity Logs</h3>
-                        <p class="text-xs text-slate-400 mb-4">Select an employee below to inspect their complete punch-in, punch-out, break, and task report details.</p>
+                        <p class="text-xs text-slate-400 mb-4">Select an employee to view date-wise duty hours, punch-in/out, breaks, and task reports.</p>
                         
-                        <!-- Employee Selector for Detailed Inspection -->
-                        <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-3">
-                            <label class="block text-xs font-bold text-indigo-400 uppercase tracking-wider">Select Employee for Full Profile Audit</label>
-                            <select id="adminInspectEmpSelect" onchange="renderAdminEmployeeAudit()" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-sm text-white">
-                                <option value="">-- Choose Employee --</option>
+                        <!-- Employee Filter Dropdown for Activity -->
+                        <div class="mb-4">
+                            <select id="filterActivityEmp" onchange="renderAdminActivity()" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                                <option value="">-- All Employees --</option>
                             </select>
-                            
-                            <!-- Detailed Audit Card -->
-                            <div id="adminEmpAuditCard" class="bg-slate-900 border border-slate-800 p-4 rounded-xl mt-3 space-y-3 hidden">
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs border-b border-slate-800 pb-3">
-                                    <div class="bg-slate-950 p-2.5 rounded-lg"><span class="text-slate-400 block">Total Duty:</span> <span id="auditTotalDuty" class="text-emerald-400 font-bold text-sm">0 hrs</span></div>
-                                    <div class="bg-slate-950 p-2.5 rounded-lg"><span class="text-slate-400 block">Punch In:</span> <span id="auditPunchInTime" class="text-indigo-400 font-bold">---</span></div>
-                                    <div class="bg-slate-950 p-2.5 rounded-lg"><span class="text-slate-400 block">Punch Out:</span> <span id="auditPunchOutTime" class="text-red-400 font-bold">---</span></div>
-                                    <div class="bg-slate-950 p-2.5 rounded-lg"><span class="text-slate-400 block">Break Status:</span> <span id="auditBreakStatus" class="text-amber-400 font-bold">---</span></div>
-                                </div>
-                                <div>
-                                    <h4 class="text-xs font-bold text-slate-300 uppercase mb-2">📋 Submitted Task Reports & Activities</h4>
-                                    <div id="auditTaskLogsContainer" class="space-y-2 max-h-48 overflow-y-auto text-xs">
-                                        <div class="text-slate-400 text-center py-2">No activity records found.</div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
-                        <div class="space-y-3 mt-4" id="adminActivityContainer">
+                        <div class="space-y-3 max-h-[60vh] overflow-y-auto" id="adminActivityContainer">
                             <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-xs text-slate-400 text-center">No activity recorded yet.</div>
                         </div>
                     </div>
@@ -377,7 +360,7 @@
                 renderAdminList();
                 populateEditDropdown();
                 populateAssignEmpDropdown();
-                populateAdminInspectDropdown();
+                populateActivityEmpDropdown();
                 renderAdminTasks();
                 renderAdminActivity();
                 switchAdminTab(activeAdminTab);
@@ -491,7 +474,7 @@
                 renderAdminList();
                 populateEditDropdown();
                 populateAssignEmpDropdown();
-                populateAdminInspectDropdown();
+                populateActivityEmpDropdown();
                 renderAdminTasks();
                 renderAdminActivity();
                 switchAdminTab('new-employee');
@@ -567,7 +550,7 @@
             } else if(tabName === 'admin-activity') {
                 document.getElementById('tabAdminActivity').classList.remove('hidden');
                 document.getElementById('navAdminActivity').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
-                populateAdminInspectDropdown();
+                populateActivityEmpDropdown();
                 renderAdminActivity();
             } else if(tabName === 'admin-tasks') {
                 document.getElementById('tabAdminTasks').classList.remove('hidden');
@@ -608,37 +591,14 @@
 
         function logActivity(action, details) {
             let logs = JSON.parse(localStorage.getItem('employee_activities')) || [];
-            let timeStr = new Date().toLocaleTimeString();
-            let dateStr = new Date().toLocaleDateString();
-            
+            let todayDate = new Date().toISOString().split('T')[0];
             logs.unshift({
                 empName: loggedInEmp ? loggedInEmp.name : 'Unknown',
                 empId: loggedInEmp ? loggedInEmp.id : '---',
-                action, details, time: timeStr + ' (' + dateStr + ')'
+                date: todayDate,
+                action, details, time: new Date().toLocaleTimeString() + ' (' + todayDate + ')'
             });
             localStorage.setItem('employee_activities', JSON.stringify(logs));
-
-            // Record precise punch/break timeline for admin audit
-            if (loggedInEmp) {
-                let timelines = JSON.parse(localStorage.getItem('employee_timelines')) || {};
-                if (!timelines[loggedInEmp.id]) {
-                    timelines[loggedInEmp.id] = { punchIn: '---', punchOut: '---', breakStatus: 'No Break', totalDutyMinutes: 0, lastPunchInTime: null };
-                }
-                if (action === 'Punch In') {
-                    timelines[loggedInEmp.id].punchIn = timeStr;
-                    timelines[loggedInEmp.id].lastPunchInTime = Date.now();
-                } else if (action === 'Punch Out') {
-                    timelines[loggedInEmp.id].punchOut = timeStr;
-                    if (timelines[loggedInEmp.id].lastPunchInTime) {
-                        let diffMins = Math.floor((Date.now() - timelines[loggedInEmp.id].lastPunchInTime) / 60000);
-                        timelines[loggedInEmp.id].totalDutyMinutes += diffMins;
-                        timelines[loggedInEmp.id].lastPunchInTime = null;
-                    }
-                } else if (action.includes('Break')) {
-                    timelines[loggedInEmp.id].breakStatus = action;
-                }
-                localStorage.setItem('employee_timelines', JSON.stringify(timelines));
-            }
         }
 
         function punchIn() {
@@ -710,88 +670,49 @@
             }
         }
 
-        function populateAdminInspectDropdown() {
+        function populateActivityEmpDropdown() {
             employees = JSON.parse(localStorage.getItem('geofence_employees')) || defaultEmployees;
-            let select = document.getElementById('adminInspectEmpSelect');
+            let select = document.getElementById('filterActivityEmp');
             if(!select) return;
-            select.innerHTML = '<option value="">-- Choose Employee --</option>';
+            select.innerHTML = '<option value="">-- All Employees --</option>';
             employees.forEach(emp => {
-                select.innerHTML += `<option value="${emp.id}">${emp.name} (ID: ${emp.id}) - ${emp.branch}</option>`;
+                select.innerHTML += `<option value="${emp.id}">${emp.name} (${emp.id}) - ${emp.branch}</option>`;
             });
-        }
-
-        function renderAdminEmployeeAudit() {
-            let empId = document.getElementById('adminInspectEmpSelect').value;
-            let auditCard = document.getElementById('adminEmpAuditCard');
-            if (!empId) {
-                auditCard.classList.add('hidden');
-                return;
-            }
-            auditCard.classList.remove('hidden');
-
-            employees = JSON.parse(localStorage.getItem('geofence_employees')) || defaultEmployees;
-            let emp = employees.find(e => e.id === empId);
-            let timelines = JSON.parse(localStorage.getItem('employee_timelines')) || {};
-            let empTimeline = timelines[empId] || { punchIn: '---', punchOut: '---', breakStatus: 'No Break', totalDutyMinutes: 0 };
-
-            // Calculate total duty hours
-            let totalMins = empTimeline.totalDutyMinutes || 0;
-            if (empTimeline.lastPunchInTime) {
-                totalMins += Math.floor((Date.now() - empTimeline.lastPunchInTime) / 60000);
-            }
-            let dutyHrs = (totalMins / 60).toFixed(1);
-
-            document.getElementById('auditTotalDuty').innerText = `${dutyHrs} Hours (${totalMins} mins)`;
-            document.getElementById('auditPunchInTime').innerText = empTimeline.punchIn;
-            document.getElementById('auditPunchOutTime').innerText = empTimeline.punchOut;
-            document.getElementById('auditBreakStatus').innerText = empTimeline.breakStatus;
-
-            // Render specific employee task & activity history
-            let tasks = JSON.parse(localStorage.getItem('employee_tasks')) || [];
-            let empTasks = tasks.filter(t => t.empId === empId);
-            let taskContainer = document.getElementById('auditTaskLogsContainer');
-
-            if (empTasks.length === 0) {
-                taskContainer.innerHTML = `<div class="text-slate-400 text-center py-2">No task reports submitted by this employee yet.</div>`;
-            } else {
-                taskContainer.innerHTML = '';
-                empTasks.forEach(t => {
-                    taskContainer.innerHTML += `
-                        <div class="bg-slate-950 border border-slate-800 p-2.5 rounded-lg space-y-1">
-                            <div class="flex justify-between font-bold text-indigo-400">
-                                <span>📅 Date: ${t.date}</span>
-                            </div>
-                            <p class="text-white font-semibold">Title: ${t.title}</p>
-                            <p class="text-slate-300">Summary: ${t.summary}</p>
-                        </div>
-                    `;
-                });
-            }
         }
 
         function renderAdminActivity() {
             let logs = JSON.parse(localStorage.getItem('employee_activities')) || [];
+            let tasks = JSON.parse(localStorage.getItem('employee_tasks')) || [];
             let employeesList = JSON.parse(localStorage.getItem('geofence_employees')) || defaultEmployees;
-            let activeEmpIds = employeesList.map(e => e.id);
-
-            let validLogs = logs.filter(l => activeEmpIds.includes(l.id) || l.empId !== '---' && activeEmpIds.includes(l.empId));
+            let selectedEmpId = document.getElementById('filterActivityEmp') ? document.getElementById('filterActivityEmp').value : "";
 
             let container = document.getElementById('adminActivityContainer');
             if(!container) return;
 
-            if(validLogs.length === 0) {
-                container.innerHTML = `<div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-xs text-slate-400 text-center">No activity recorded yet.</div>`;
+            // Filter by employee if selected
+            let filteredLogs = selectedEmpId ? logs.filter(l => l.empId === selectedEmpId) : logs;
+            let filteredTasks = selectedEmpId ? tasks.filter(t => t.empId === selectedEmpId) : tasks;
+
+            if(filteredLogs.length === 0 && filteredTasks.length === 0) {
+                container.innerHTML = `<div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-xs text-slate-400 text-center">No activity records found.</div>`;
                 return;
             }
 
             container.innerHTML = '';
-            validLogs.forEach(l => {
+
+            // Group by employee and date for a clean professional report
+            let reportHTML = '';
+            
+            // Show Activity Logs
+            reportHTML += `<h4 class="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2">⏱️ Punch & Break Activity Logs</h4>`;
+            filteredLogs.forEach(l => {
                 let badgeColor = l.action.includes('Punch In') ? 'text-emerald-400 bg-emerald-500/10' : (l.action.includes('Punch Out') ? 'text-red-400 bg-red-500/10' : 'text-amber-400 bg-amber-500/10');
-                container.innerHTML += `
-                    <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs flex justify-between items-center">
+                reportHTML += `
+                    <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs flex justify-between items-center mb-2">
                         <div>
                             <span class="font-bold text-white">${l.empName} (${l.empId})</span>
                             <p class="text-slate-300 mt-0.5">${l.details}</p>
+                            <span class="text-[10px] text-indigo-300">📅 Date: ${l.date || 'Today'}</span>
                         </div>
                         <div class="text-right">
                             <span class="px-2 py-1 rounded text-[10px] font-bold ${badgeColor}">${l.action}</span>
@@ -800,6 +721,23 @@
                     </div>
                 `;
             });
+
+            // Show Submitted Tasks Reports
+            reportHTML += `<h4 class="text-xs font-bold text-indigo-400 uppercase tracking-wider mt-4 mb-2">📋 Submitted Task Reports</h4>`;
+            filteredTasks.forEach(t => {
+                reportHTML += `
+                    <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs space-y-1 mb-2">
+                        <div class="flex justify-between font-bold text-white">
+                            <span>${t.empName} (${t.empId})</span>
+                            <span class="text-indigo-400">📅 Date: ${t.date}</span>
+                        </div>
+                        <p class="text-indigo-300 font-semibold">Title: ${t.title}</p>
+                        <p class="text-slate-300">Summary: ${t.summary}</p>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = reportHTML;
         }
 
         function submitLeaveRequest() { alert('Leave request submitted successfully!'); }
