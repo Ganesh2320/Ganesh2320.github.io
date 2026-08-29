@@ -169,10 +169,35 @@
                     </div>
 
                     <!-- ADMIN ACTIVITY TAB -->
-                    <div id="tabAdminActivity" class="max-w-3xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden space-y-4">
+                    <div id="tabAdminActivity" class="max-w-4xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden space-y-4">
                         <h3 class="text-lg font-bold text-white mb-2">⚡ Employee Live Activity Logs</h3>
-                        <p class="text-xs text-slate-400 mb-4">Real-time tracking of employee punch-in, punch-out, and break status.</p>
-                        <div class="space-y-3" id="adminActivityContainer">
+                        <p class="text-xs text-slate-400 mb-4">Select an employee below to inspect their complete punch-in, punch-out, break, and task report details.</p>
+                        
+                        <!-- Employee Selector for Detailed Inspection -->
+                        <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-3">
+                            <label class="block text-xs font-bold text-indigo-400 uppercase tracking-wider">Select Employee for Full Profile Audit</label>
+                            <select id="adminInspectEmpSelect" onchange="renderAdminEmployeeAudit()" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                                <option value="">-- Choose Employee --</option>
+                            </select>
+                            
+                            <!-- Detailed Audit Card -->
+                            <div id="adminEmpAuditCard" class="bg-slate-900 border border-slate-800 p-4 rounded-xl mt-3 space-y-3 hidden">
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs border-b border-slate-800 pb-3">
+                                    <div class="bg-slate-950 p-2.5 rounded-lg"><span class="text-slate-400 block">Total Duty:</span> <span id="auditTotalDuty" class="text-emerald-400 font-bold text-sm">0 hrs</span></div>
+                                    <div class="bg-slate-950 p-2.5 rounded-lg"><span class="text-slate-400 block">Punch In:</span> <span id="auditPunchInTime" class="text-indigo-400 font-bold">---</span></div>
+                                    <div class="bg-slate-950 p-2.5 rounded-lg"><span class="text-slate-400 block">Punch Out:</span> <span id="auditPunchOutTime" class="text-red-400 font-bold">---</span></div>
+                                    <div class="bg-slate-950 p-2.5 rounded-lg"><span class="text-slate-400 block">Break Status:</span> <span id="auditBreakStatus" class="text-amber-400 font-bold">---</span></div>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-300 uppercase mb-2">📋 Submitted Task Reports & Activities</h4>
+                                    <div id="auditTaskLogsContainer" class="space-y-2 max-h-48 overflow-y-auto text-xs">
+                                        <div class="text-slate-400 text-center py-2">No activity records found.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 mt-4" id="adminActivityContainer">
                             <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-xs text-slate-400 text-center">No activity recorded yet.</div>
                         </div>
                     </div>
@@ -287,7 +312,7 @@
                             <input type="date" id="taskReportDate" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
                             <input type="text" id="taskTitle" placeholder="Report Title" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
                             <textarea id="taskSummary" rows="2" placeholder="Work summary..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white"></textarea>
-                            <button onclick="submitDailyTask()" class="w-full bg-emerald-600 hover:bg-emerald-500 py-2.5 rounded-lg text-sm font-semibold transition">Submit Report</button>
+                            <button onclick="submitDailyTask()" class="w-full bg-emerald-600 hover:bg-emerald-500 py-2.5 rounded-lg text-xs font-semibold transition">Submit Report</button>
                         </div>
                         <div class="border-t border-slate-800 pt-3 space-y-2">
                             <h4 class="text-xs font-bold text-slate-400 uppercase">Your Day-wise Report History</h4>
@@ -352,6 +377,7 @@
                 renderAdminList();
                 populateEditDropdown();
                 populateAssignEmpDropdown();
+                populateAdminInspectDropdown();
                 renderAdminTasks();
                 renderAdminActivity();
                 switchAdminTab(activeAdminTab);
@@ -465,6 +491,7 @@
                 renderAdminList();
                 populateEditDropdown();
                 populateAssignEmpDropdown();
+                populateAdminInspectDropdown();
                 renderAdminTasks();
                 renderAdminActivity();
                 switchAdminTab('new-employee');
@@ -522,53 +549,96 @@
         function switchAdminTab(tabName) {
             localStorage.setItem('active_admin_tab', tabName);
             ['tabNewEmployee', 'tabLocation', 'tabEditEmployee', 'tabAdminActivity', 'tabAdminTasks', 'tabAdminSettings'].forEach(t => document.getElementById(t).classList.add('hidden'));
-            
+            ['navNewEmp', 'navLocation', 'navEditEmp', 'navAdminActivity', 'navAdminTasks', 'navAdminSet'].forEach(n => {
+                document.getElementById(n).className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3";
+            });
+
             if(tabName === 'new-employee') {
                 document.getElementById('tabNewEmployee').classList.remove('hidden');
+                document.getElementById('navNewEmp').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
             } else if(tabName === 'location') {
                 document.getElementById('tabLocation').classList.remove('hidden');
+                document.getElementById('navLocation').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 setTimeout(() => { renderAdminList(); }, 200);
             } else if(tabName === 'edit-employee') {
                 document.getElementById('tabEditEmployee').classList.remove('hidden');
+                document.getElementById('navEditEmp').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 populateEditDropdown();
             } else if(tabName === 'admin-activity') {
                 document.getElementById('tabAdminActivity').classList.remove('hidden');
+                document.getElementById('navAdminActivity').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
+                populateAdminInspectDropdown();
                 renderAdminActivity();
             } else if(tabName === 'admin-tasks') {
                 document.getElementById('tabAdminTasks').classList.remove('hidden');
+                document.getElementById('navAdminTasks').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 populateAssignEmpDropdown();
                 renderAdminTasks();
             } else if(tabName === 'admin-settings') {
                 document.getElementById('tabAdminSettings').classList.remove('hidden');
+                document.getElementById('navAdminSet').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
             }
         }
 
         function switchEmpTab(tabName) {
             localStorage.setItem('active_emp_tab', tabName);
             ['empTabAttendance', 'empTabBreak', 'empTabLeave', 'empTabTask', 'empTabSettings'].forEach(t => document.getElementById(t).classList.add('hidden'));
+            ['navEmpAtt', 'navEmpBreak', 'navEmpLeave', 'navEmpTask', 'navEmpSet'].forEach(n => {
+                document.getElementById(n).className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3";
+            });
 
             if(tabName === 'attendance') {
                 document.getElementById('empTabAttendance').classList.remove('hidden');
+                document.getElementById('navEmpAtt').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
             } else if(tabName === 'break') {
                 document.getElementById('empTabBreak').classList.remove('hidden');
+                document.getElementById('navEmpBreak').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
             } else if(tabName === 'leave') {
                 document.getElementById('empTabLeave').classList.remove('hidden');
+                document.getElementById('navEmpLeave').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
             } else if(tabName === 'task') {
                 document.getElementById('empTabTask').classList.remove('hidden');
+                document.getElementById('navEmpTask').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 renderEmpTaskHistory();
             } else if(tabName === 'settings') {
                 document.getElementById('empTabSettings').classList.remove('hidden');
+                document.getElementById('navEmpSet').className = "text-left px-3 md:px-4 py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
             }
         }
 
         function logActivity(action, details) {
             let logs = JSON.parse(localStorage.getItem('employee_activities')) || [];
+            let timeStr = new Date().toLocaleTimeString();
+            let dateStr = new Date().toLocaleDateString();
+            
             logs.unshift({
                 empName: loggedInEmp ? loggedInEmp.name : 'Unknown',
                 empId: loggedInEmp ? loggedInEmp.id : '---',
-                action, details, time: new Date().toLocaleTimeString() + ' (' + new Date().toLocaleDateString() + ')'
+                action, details, time: timeStr + ' (' + dateStr + ')'
             });
             localStorage.setItem('employee_activities', JSON.stringify(logs));
+
+            // Record precise punch/break timeline for admin audit
+            if (loggedInEmp) {
+                let timelines = JSON.parse(localStorage.getItem('employee_timelines')) || {};
+                if (!timelines[loggedInEmp.id]) {
+                    timelines[loggedInEmp.id] = { punchIn: '---', punchOut: '---', breakStatus: 'No Break', totalDutyMinutes: 0, lastPunchInTime: null };
+                }
+                if (action === 'Punch In') {
+                    timelines[loggedInEmp.id].punchIn = timeStr;
+                    timelines[loggedInEmp.id].lastPunchInTime = Date.now();
+                } else if (action === 'Punch Out') {
+                    timelines[loggedInEmp.id].punchOut = timeStr;
+                    if (timelines[loggedInEmp.id].lastPunchInTime) {
+                        let diffMins = Math.floor((Date.now() - timelines[loggedInEmp.id].lastPunchInTime) / 60000);
+                        timelines[loggedInEmp.id].totalDutyMinutes += diffMins;
+                        timelines[loggedInEmp.id].lastPunchInTime = null;
+                    }
+                } else if (action.includes('Break')) {
+                    timelines[loggedInEmp.id].breakStatus = action;
+                }
+                localStorage.setItem('employee_timelines', JSON.stringify(timelines));
+            }
         }
 
         function punchIn() {
@@ -637,6 +707,65 @@
                 statusText.innerText = "On Shift (Working)";
                 statusText.className = "text-base font-bold text-emerald-400 mt-1";
                 logActivity('Break End', `Returned from break at ${time}`);
+            }
+        }
+
+        function populateAdminInspectDropdown() {
+            employees = JSON.parse(localStorage.getItem('geofence_employees')) || defaultEmployees;
+            let select = document.getElementById('adminInspectEmpSelect');
+            if(!select) return;
+            select.innerHTML = '<option value="">-- Choose Employee --</option>';
+            employees.forEach(emp => {
+                select.innerHTML += `<option value="${emp.id}">${emp.name} (ID: ${emp.id}) - ${emp.branch}</option>`;
+            });
+        }
+
+        function renderAdminEmployeeAudit() {
+            let empId = document.getElementById('adminInspectEmpSelect').value;
+            let auditCard = document.getElementById('adminEmpAuditCard');
+            if (!empId) {
+                auditCard.classList.add('hidden');
+                return;
+            }
+            auditCard.classList.remove('hidden');
+
+            employees = JSON.parse(localStorage.getItem('geofence_employees')) || defaultEmployees;
+            let emp = employees.find(e => e.id === empId);
+            let timelines = JSON.parse(localStorage.getItem('employee_timelines')) || {};
+            let empTimeline = timelines[empId] || { punchIn: '---', punchOut: '---', breakStatus: 'No Break', totalDutyMinutes: 0 };
+
+            // Calculate total duty hours
+            let totalMins = empTimeline.totalDutyMinutes || 0;
+            if (empTimeline.lastPunchInTime) {
+                totalMins += Math.floor((Date.now() - empTimeline.lastPunchInTime) / 60000);
+            }
+            let dutyHrs = (totalMins / 60).toFixed(1);
+
+            document.getElementById('auditTotalDuty').innerText = `${dutyHrs} Hours (${totalMins} mins)`;
+            document.getElementById('auditPunchInTime').innerText = empTimeline.punchIn;
+            document.getElementById('auditPunchOutTime').innerText = empTimeline.punchOut;
+            document.getElementById('auditBreakStatus').innerText = empTimeline.breakStatus;
+
+            // Render specific employee task & activity history
+            let tasks = JSON.parse(localStorage.getItem('employee_tasks')) || [];
+            let empTasks = tasks.filter(t => t.empId === empId);
+            let taskContainer = document.getElementById('auditTaskLogsContainer');
+
+            if (empTasks.length === 0) {
+                taskContainer.innerHTML = `<div class="text-slate-400 text-center py-2">No task reports submitted by this employee yet.</div>`;
+            } else {
+                taskContainer.innerHTML = '';
+                empTasks.forEach(t => {
+                    taskContainer.innerHTML += `
+                        <div class="bg-slate-950 border border-slate-800 p-2.5 rounded-lg space-y-1">
+                            <div class="flex justify-between font-bold text-indigo-400">
+                                <span>📅 Date: ${t.date}</span>
+                            </div>
+                            <p class="text-white font-semibold">Title: ${t.title}</p>
+                            <p class="text-slate-300">Summary: ${t.summary}</p>
+                        </div>
+                    `;
+                });
             }
         }
 
