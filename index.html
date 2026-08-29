@@ -9,13 +9,17 @@
     <style>
         #map { height: 100%; width: 100%; border-radius: 0.75rem; }
         body { -webkit-text-size-adjust: 100%; touch-action: manipulation; }
+        /* Custom scrollbar for flawless mobile sidebar experience */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans w-screen h-screen flex flex-col overflow-hidden">
+<body class="bg-slate-900 text-slate-100 font-sans w-screen h-screen flex flex-col overflow-hidden m-0 p-0">
 
     <!-- ================= 1. LOGIN SECTION ================= -->
-    <div id="authSection" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-2xl w-full max-w-md shadow-2xl">
+    <div id="authSection" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-2xl w-full max-w-md shadow-2xl my-auto">
             <div class="text-center mb-6">
                 <div class="w-12 h-12 bg-indigo-600 rounded-xl mx-auto flex items-center justify-center text-xl font-bold mb-3 shadow-lg shadow-indigo-500/30">🛡️</div>
                 <h2 class="text-2xl font-bold text-white">Live Tracking</h2>
@@ -58,38 +62,38 @@
 
     <!-- ================= 2. ADMIN DASHBOARD ================= -->
     <div id="adminDashboard" class="flex flex-col w-full h-full hidden">
-        <header class="bg-slate-800 border-b border-slate-700 px-4 md:px-6 py-4 flex justify-between items-center shadow-md">
+        <header class="bg-slate-800 border-b border-slate-700 px-4 md:px-6 py-3 shrink-0 flex justify-between items-center shadow-md">
             <div class="flex items-center space-x-3">
                 <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
-                <h1 class="text-lg md:text-xl font-bold text-white">Dashboard</h1>
+                <h1 class="text-base md:text-xl font-bold text-white">Live Tracking</h1>
             </div>
             <button onclick="logout()" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs px-3 py-2 rounded-lg font-medium transition">Logout</button>
         </header>
 
         <!-- Alert Banner -->
-        <div id="alertBanner" class="bg-red-600 text-white px-6 py-3 text-sm font-semibold flex justify-between items-center hidden shadow-lg animate-pulse">
+        <div id="alertBanner" class="bg-red-600 text-white px-4 py-2 text-xs md:text-sm font-semibold flex justify-between items-center hidden shrink-0 animate-pulse">
             <span id="alertText">⚠️ ALERT: Employee breached geofence boundary!</span>
             <button onclick="dismissAlert()" class="bg-black/20 px-3 py-1 rounded text-xs hover:bg-black/40">Dismiss</button>
         </div>
 
-        <div class="flex flex-col md:flex-row flex-1 overflow-hidden">
-            <!-- Sidebar -->
-            <aside class="w-full md:w-64 bg-slate-800 border-r border-slate-700 flex md:flex-col flex-row overflow-x-auto md:overflow-y-auto p-2 md:p-4 space-x-2 md:space-x-0 md:space-y-2 shrink-0">
-                <p class="hidden md:block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">DASHBOARD</p>
-                <button onclick="switchAdminTab('new-employee')" id="navNewEmp" class="whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-3"><span>➕</span> <span class="hidden md:inline">New Employee</span></button>
-                <button onclick="switchAdminTab('location')" id="navLocation" class="whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-3"><span>📍</span> <span class="hidden md:inline">Location</span></button>
-                <button onclick="switchAdminTab('edit-employee')" id="navEditEmp" class="whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-3"><span>✏️</span> <span class="hidden md:inline">Employee Edit</span></button>
-                <button onclick="switchAdminTab('admin-activity')" id="navAdminActivity" class="whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-3"><span>⚡</span> <span class="hidden md:inline">Activity</span></button>
-                <button onclick="switchAdminTab('admin-tasks')" id="navAdminTasks" class="whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-3"><span>📋</span> <span class="hidden md:inline">Daily Task</span></button>
-                <button onclick="switchAdminTab('admin-settings')" id="navAdminSet" class="whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-3"><span>⚙️</span> <span class="hidden md:inline">Settings</span></button>
+        <div class="flex flex-row flex-1 overflow-hidden relative">
+            <!-- Sidebar (Strictly Fixed Left Side for All Devices) -->
+            <aside class="w-44 md:w-64 bg-slate-800 border-r border-slate-700 flex flex-col overflow-y-auto p-2 md:p-4 space-y-1 md:space-y-2 shrink-0 z-20">
+                <p class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 md:mb-2 px-2">DASHBOARD</p>
+                <button onclick="switchAdminTab('new-employee')" id="navNewEmp" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3"><span>➕</span> <span class="truncate">New Employee</span></button>
+                <button onclick="switchAdminTab('location')" id="navLocation" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>📍</span> <span class="truncate">Location</span></button>
+                <button onclick="switchAdminTab('edit-employee')" id="navEditEmp" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>✏️</span> <span class="truncate">Employee Edit</span></button>
+                <button onclick="switchAdminTab('admin-activity')" id="navAdminActivity" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>⚡</span> <span class="truncate">Activity</span></button>
+                <button onclick="switchAdminTab('admin-tasks')" id="navAdminTasks" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>📋</span> <span class="truncate">Daily Task</span></button>
+                <button onclick="switchAdminTab('admin-settings')" id="navAdminSet" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>⚙️</span> <span class="truncate">Settings</span></button>
             </aside>
 
             <!-- Content Area -->
             <main class="flex-1 bg-slate-950 p-4 md:p-6 overflow-y-auto">
                 
                 <!-- NEW EMPLOYEE TAB -->
-                <div id="tabNewEmployee" class="max-w-xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl">
-                    <h3 class="text-lg font-bold text-white mb-4">Add Employee</h3>
+                <div id="tabNewEmployee" class="max-w-xl mx-auto bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl">
+                    <h3 class="text-base md:text-lg font-bold text-white mb-4">Add Employee</h3>
                     <div class="space-y-3">
                         <input type="text" id="newEmpId" placeholder="Employee ID (e.g. EMP002)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
                         <input type="text" id="newEmpName" placeholder="Full Name" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
@@ -118,22 +122,21 @@
 
                 <!-- LOCATION TAB -->
                 <div id="tabLocation" class="h-full flex flex-col hidden">
-                    <div class="bg-slate-900 px-4 py-2 rounded-t-xl border border-slate-800 flex justify-between items-center text-sm mb-2">
+                    <div class="bg-slate-900 px-4 py-2 rounded-t-xl border border-slate-800 flex justify-between items-center text-sm mb-2 shrink-0">
                         <span id="adminSelectedInfo" class="text-indigo-400 font-medium">Select Employee</span>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 h-[75vh] md:h-full">
-                        <div class="col-span-1 bg-slate-900 border border-slate-800 p-3 rounded-xl overflow-y-auto space-y-2 max-h-48 md:max-h-full" id="adminEmpList"></div>
-                        <div class="col-span-2 bg-slate-900 rounded-xl border border-slate-800 overflow-hidden shadow-inner flex flex-col h-64 md:h-auto">
-                            <!-- Google Maps Iframe Container -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 h-[75vh] md:h-full flex-1">
+                        <div class="col-span-1 bg-slate-900 border border-slate-800 p-3 rounded-xl overflow-y-auto space-y-2 max-h-40 md:max-h-full" id="adminEmpList"></div>
+                        <div class="col-span-2 bg-slate-900 rounded-xl border border-slate-800 overflow-hidden shadow-inner flex flex-col h-72 md:h-auto">
                             <iframe id="googleMapFrame" class="w-full h-full border-0" src="" allowfullscreen="" loading="lazy"></iframe>
                         </div>
                     </div>
                 </div>
 
                 <!-- EDIT & REMOVE EMPLOYEE TAB -->
-                <div id="tabEditEmployee" class="max-w-2xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden">
+                <div id="tabEditEmployee" class="max-w-2xl mx-auto bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl hidden">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-bold text-white">Edit Details</h3>
+                        <h3 class="text-base md:text-lg font-bold text-white">Edit Details</h3>
                         <button onclick="removeEmployeeAccount()" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs px-3 py-2 rounded-lg font-medium transition">Remove Employee</button>
                     </div>
                     <div class="mb-4">
@@ -167,8 +170,8 @@
                 </div>
 
                 <!-- ADMIN ACTIVITY TAB -->
-                <div id="tabAdminActivity" class="max-w-3xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden space-y-4">
-                    <h3 class="text-lg font-bold text-white mb-2">⚡ Employee Live Activity Logs</h3>
+                <div id="tabAdminActivity" class="max-w-3xl mx-auto bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl hidden space-y-4">
+                    <h3 class="text-base md:text-lg font-bold text-white mb-2">⚡ Employee Live Activity Logs</h3>
                     <p class="text-xs text-slate-400 mb-4">Real-time tracking of employee punch-in, punch-out, and break status.</p>
                     <div class="space-y-3" id="adminActivityContainer">
                         <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-xs text-slate-400 text-center">No activity recorded yet.</div>
@@ -176,7 +179,7 @@
                 </div>
 
                 <!-- DAILY TASK TAB -->
-                <div id="tabAdminTasks" class="max-w-5xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden space-y-6">
+                <div id="tabAdminTasks" class="max-w-5xl mx-auto bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl hidden space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="bg-slate-950 border border-slate-800 p-5 rounded-xl space-y-3">
                             <h3 class="text-md font-bold text-white">📌 Admin Assigned Target</h3>
@@ -197,8 +200,8 @@
                 </div>
 
                 <!-- SETTINGS TAB -->
-                <div id="tabAdminSettings" class="max-w-xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden">
-                    <h3 class="text-lg font-bold text-white mb-2">Profile Edit</h3>
+                <div id="tabAdminSettings" class="max-w-xl mx-auto bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl hidden">
+                    <h3 class="text-base md:text-lg font-bold text-white mb-2">Profile Edit</h3>
                     <div class="space-y-3">
                         <input type="text" id="currentAdminUser" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-white">
                         <input type="password" id="currentAdminPass" placeholder="Enter new password" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-white">
@@ -211,30 +214,30 @@
 
     <!-- ================= 3. EMPLOYEE DASHBOARD ================= -->
     <div id="employeeDashboard" class="flex flex-col w-full h-full hidden">
-        <header class="bg-slate-800 border-b border-slate-700 px-4 md:px-6 py-4 flex justify-between items-center shadow-md">
+        <header class="bg-slate-800 border-b border-slate-700 px-4 md:px-6 py-3 shrink-0 flex justify-between items-center shadow-md">
             <div class="flex items-center space-x-3">
                 <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
-                <h1 class="text-lg md:text-xl font-bold text-white" id="welcomeEmpName">Employee Portal</h1>
+                <h1 class="text-base md:text-xl font-bold text-white" id="welcomeEmpName">Employee Portal</h1>
             </div>
             <button onclick="logout()" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs px-3 py-2 rounded-lg font-medium transition">Logout</button>
         </header>
 
-        <div class="flex flex-col md:flex-row flex-1 overflow-hidden">
-            <!-- Sidebar -->
-            <aside class="w-full md:w-64 bg-slate-800 border-r border-slate-700 flex md:flex-col flex-row overflow-x-auto md:overflow-y-auto p-2 md:p-4 space-x-2 md:space-x-0 md:space-y-2 shrink-0">
-                <p class="hidden md:block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">DASHBORAD</p>
-                <button onclick="switchEmpTab('attendance')" id="navEmpAtt" class="whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-3"><span>📅</span> <span class="hidden md:inline">Attendance</span></button>
-                <button onclick="switchEmpTab('break')" id="navEmpBreak" class="whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-3"><span>☕</span> <span class="hidden md:inline">Break Time</span></button>
-                <button onclick="switchEmpTab('leave')" id="navEmpLeave" class="whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-3"><span>📝</span> <span class="hidden md:inline">Leave Request</span></button>
-                <button onclick="switchEmpTab('task')" id="navEmpTask" class="whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-3"><span>📋</span> <span class="hidden md:inline">Daily Task</span></button>
-                <button onclick="switchEmpTab('settings')" id="navEmpSet" class="whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-3"><span>⚙️</span> <span class="hidden md:inline">Settings</span></button>
+        <div class="flex flex-row flex-1 overflow-hidden relative">
+            <!-- Sidebar (Strictly Fixed Left Side for All Devices) -->
+            <aside class="w-44 md:w-64 bg-slate-800 border-r border-slate-700 flex flex-col overflow-y-auto p-2 md:p-4 space-y-1 md:space-y-2 shrink-0 z-20">
+                <p class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 md:mb-2 px-2">DASHBORAD</p>
+                <button onclick="switchEmpTab('attendance')" id="navEmpAtt" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3"><span>📅</span> <span class="truncate">Attendance</span></button>
+                <button onclick="switchEmpTab('break')" id="navEmpBreak" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>☕</span> <span class="truncate">Break Time</span></button>
+                <button onclick="switchEmpTab('leave')" id="navEmpLeave" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>📝</span> <span class="truncate">Leave Request</span></button>
+                <button onclick="switchEmpTab('task')" id="navEmpTask" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>📋</span> <span class="truncate">Daily Task</span></button>
+                <button onclick="switchEmpTab('settings')" id="navEmpSet" class="text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3"><span>⚙️</span> <span class="truncate">Settings</span></button>
             </aside>
 
             <!-- Content Area -->
             <main class="flex-1 bg-slate-950 p-4 md:p-6 overflow-y-auto flex items-center justify-center">
                 
                 <!-- ATTENDANCE TAB -->
-                <div id="empTabAttendance" class="max-w-md w-full bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center shadow-xl space-y-4">
+                <div id="empTabAttendance" class="max-w-md w-full bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl text-center shadow-xl space-y-4">
                     <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-xl">📍</div>
                     <h2 class="text-lg font-bold text-white">Attendance </h2>
                     
@@ -255,7 +258,7 @@
                 </div>
 
                 <!-- BREAK TIME TAB -->
-                <div id="empTabBreak" class="max-w-md w-full bg-slate-900 border border-slate-800 p-8 rounded-2xl text-center shadow-xl hidden space-y-4">
+                <div id="empTabBreak" class="max-w-md w-full bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-2xl text-center shadow-xl hidden space-y-4">
                     <h3 class="text-lg font-bold text-white mb-2">Break Time</h3>
                     <p class="text-xs text-slate-400">Starting break will pause your duty hours timer.</p>
                     <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
@@ -266,7 +269,7 @@
                 </div>
 
                 <!-- LEAVE TAB -->
-                <div id="empTabLeave" class="max-w-md w-full bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden text-left space-y-3">
+                <div id="empTabLeave" class="max-w-md w-full bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl hidden text-left space-y-3">
                     <h3 class="text-lg font-bold text-white mb-2 text-center">Submit Leave Request</h3>
                     <input type="date" id="leaveDate" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
                     <textarea id="leaveReason" rows="3" placeholder="Enter reason..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white"></textarea>
@@ -274,7 +277,7 @@
                 </div>
 
                 <!-- DAILY TASK TAB -->
-                <div id="empTabTask" class="max-w-lg w-full bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden text-left space-y-4 max-h-[85vh] overflow-y-auto">
+                <div id="empTabTask" class="max-w-lg w-full bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl hidden text-left space-y-4 max-h-[85vh] overflow-y-auto">
                     <h3 class="text-lg font-bold text-white text-center">Daily Task & Day-wise Reports</h3>
                     <div class="bg-indigo-950/60 border border-indigo-500/40 p-4 rounded-xl">
                         <span class="text-[10px] uppercase tracking-wider font-bold text-indigo-400">🎯 Today Target</span>
@@ -296,7 +299,7 @@
                 </div>
 
                 <!-- SETTINGS TAB -->
-                <div id="empTabSettings" class="max-w-md w-full bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden text-left space-y-3">
+                <div id="empTabSettings" class="max-w-md w-full bg-slate-900 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl hidden text-left space-y-3">
                     <h3 class="text-lg font-bold text-white mb-2 text-center">Employee Details</h3>
                     <input type="text" id="empSettingUser" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
                     <input type="password" id="empSettingPass" placeholder="New password" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
@@ -355,7 +358,6 @@
             }
         }
 
-        // 10-second automatic background tracking with 50-meter geofence check
         function initBackgroundTracking() {
             if (navigator.geolocation) {
                 if (globalTrackingInterval) clearInterval(globalTrackingInterval);
@@ -469,57 +471,57 @@
         function switchAdminTab(tabName) {
             ['tabNewEmployee', 'tabLocation', 'tabEditEmployee', 'tabAdminActivity', 'tabAdminTasks', 'tabAdminSettings'].forEach(t => document.getElementById(t).classList.add('hidden'));
             ['navNewEmp', 'navLocation', 'navEditEmp', 'navAdminActivity', 'navAdminTasks', 'navAdminSet'].forEach(n => {
-                document.getElementById(n).className = "whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-3";
+                document.getElementById(n).className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3";
             });
 
             if(tabName === 'new-employee') {
                 document.getElementById('tabNewEmployee').classList.remove('hidden');
-                document.getElementById('navNewEmp').className = "whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-3";
+                document.getElementById('navNewEmp').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
             } else if(tabName === 'location') {
                 document.getElementById('tabLocation').classList.remove('hidden');
-                document.getElementById('navLocation').className = "whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-3";
+                document.getElementById('navLocation').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 setTimeout(() => { renderAdminList(); }, 200);
             } else if(tabName === 'edit-employee') {
                 document.getElementById('tabEditEmployee').classList.remove('hidden');
-                document.getElementById('navEditEmp').className = "whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-3";
+                document.getElementById('navEditEmp').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 populateEditDropdown();
             } else if(tabName === 'admin-activity') {
                 document.getElementById('tabAdminActivity').classList.remove('hidden');
-                document.getElementById('navAdminActivity').className = "whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-3";
+                document.getElementById('navAdminActivity').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 renderAdminActivity();
             } else if(tabName === 'admin-tasks') {
                 document.getElementById('tabAdminTasks').classList.remove('hidden');
-                document.getElementById('navAdminTasks').className = "whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-3";
+                document.getElementById('navAdminTasks').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 populateAssignEmpDropdown();
                 renderAdminTasks();
             } else if(tabName === 'admin-settings') {
                 document.getElementById('tabAdminSettings').classList.remove('hidden');
-                document.getElementById('navAdminSet').className = "whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-3";
+                document.getElementById('navAdminSet').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2 md:space-x-3";
             }
         }
 
         function switchEmpTab(tabName) {
             ['empTabAttendance', 'empTabBreak', 'empTabLeave', 'empTabTask', 'empTabSettings'].forEach(t => document.getElementById(t).classList.add('hidden'));
             ['navEmpAtt', 'navEmpBreak', 'navEmpLeave', 'navEmpTask', 'navEmpSet'].forEach(n => {
-                document.getElementById(n).className = "whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-3";
+                document.getElementById(n).className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium text-slate-300 hover:bg-slate-700 transition flex items-center space-x-2 md:space-x-3";
             });
 
             if(tabName === 'attendance') {
                 document.getElementById('empTabAttendance').classList.remove('hidden');
-                document.getElementById('navEmpAtt').className = "whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-3";
+                document.getElementById('navEmpAtt').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
             } else if(tabName === 'break') {
                 document.getElementById('empTabBreak').classList.remove('hidden');
-                document.getElementById('navEmpBreak').className = "whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-3";
+                document.getElementById('navEmpBreak').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
             } else if(tabName === 'leave') {
                 document.getElementById('empTabLeave').classList.remove('hidden');
-                document.getElementById('navEmpLeave').className = "whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-3";
+                document.getElementById('navEmpLeave').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
             } else if(tabName === 'task') {
                 document.getElementById('empTabTask').classList.remove('hidden');
-                document.getElementById('navEmpTask').className = "whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-3";
+                document.getElementById('navEmpTask').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
                 renderEmpTaskHistory();
             } else if(tabName === 'settings') {
                 document.getElementById('empTabSettings').classList.remove('hidden');
-                document.getElementById('navEmpSet').className = "whitespace-nowrap text-left px-4 py-3 rounded-xl text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-3";
+                document.getElementById('navEmpSet').className = "text-left px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium bg-emerald-600 text-white transition flex items-center space-x-2 md:space-x-3";
             }
         }
 
