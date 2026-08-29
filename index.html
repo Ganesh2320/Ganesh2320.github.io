@@ -171,7 +171,7 @@
                     <!-- ADMIN ACTIVITY TAB -->
                     <div id="tabAdminActivity" class="max-w-4xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden space-y-4">
                         <h3 class="text-lg font-bold text-white mb-2">⚡ Employee Live Activity Logs</h3>
-                        <p class="text-xs text-slate-400 mb-4">Select an employee and date to view historical attendance & task logs.</p>
+                        <p class="text-xs text-slate-400 mb-4">Select an employee and use the calendar date picker to view logs.</p>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                             <div>
@@ -181,8 +181,8 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs text-slate-400 mb-1">Filter Date</label>
-                                <input type="date" id="filterActivityDate" onchange="renderAdminActivity()" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                                <label class="block text-xs text-slate-400 mb-1">Select Date (Calendar)</label>
+                                <input type="date" id="filterActivityDate" onchange="renderAdminActivity()" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white cursor-pointer">
                             </div>
                         </div>
 
@@ -199,7 +199,7 @@
                                 <select id="assignEmpSelect" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-sm text-white">
                                     <option value="">-- Choose Employee --</option>
                                 </select>
-                                <input type="date" id="adminTargetDate" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                                <input type="date" id="adminTargetDate" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-sm text-white cursor-pointer">
                                 <textarea id="adminCustomTask" rows="3" placeholder="Type target description..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-sm text-white"></textarea>
                                 <button onclick="createNewTask()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-2.5 rounded-lg text-sm font-semibold transition">Assign Target</button>
                             </div>
@@ -284,7 +284,7 @@
                     <!-- LEAVE TAB -->
                     <div id="empTabLeave" class="max-w-md w-full bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl hidden text-left space-y-3">
                         <h3 class="text-lg font-bold text-white mb-2 text-center">Submit Leave Request</h3>
-                        <input type="date" id="leaveDate" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                        <input type="date" id="leaveDate" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white cursor-pointer">
                         <textarea id="leaveReason" rows="3" placeholder="Enter reason..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white"></textarea>
                         <button onclick="submitLeaveRequest()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl text-sm font-semibold transition">Send Request</button>
                     </div>
@@ -298,7 +298,7 @@
                         </div>
                         <div class="space-y-3 border-t border-slate-800 pt-3">
                             <h4 class="text-xs font-bold text-slate-400 uppercase">Submit Today's Report</h4>
-                            <input type="date" id="taskReportDate" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
+                            <input type="date" id="taskReportDate" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white cursor-pointer">
                             <input type="text" id="taskTitle" placeholder="Report Title" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white">
                             <textarea id="taskSummary" rows="2" placeholder="Work summary..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white"></textarea>
                             <button onclick="submitDailyTask()" class="w-full bg-emerald-600 hover:bg-emerald-500 py-2.5 rounded-lg text-xs font-semibold transition">Submit Report</button>
@@ -351,12 +351,11 @@
         let isOnBreak = false;
         let globalTrackingInterval = null;
 
-        // Automatically reset daily punch status if calendar date changes
+        // Automatically reset daily punch status if calendar date changes to a new day
         function checkDailyReset() {
             let lastDate = localStorage.getItem('app_current_date');
             let todayDate = new Date().toISOString().split('T')[0];
             if (lastDate !== todayDate) {
-                // Clear active punch-in state for all employees when day changes
                 employees.forEach(emp => {
                     localStorage.removeItem('punched_in_' + emp.id);
                 });
@@ -378,7 +377,6 @@
                 document.getElementById('currentAdminUser').value = adminAuth.user;
                 document.getElementById('currentAdminPass').value = adminAuth.pass;
                 
-                // Set default filter date to today
                 let todayStr = new Date().toISOString().split('T')[0];
                 if(document.getElementById('filterActivityDate')) {
                     document.getElementById('filterActivityDate').value = todayStr;
@@ -413,7 +411,9 @@
                     }
 
                     let todayStr = new Date().toISOString().split('T')[0];
-                    document.getElementById('taskReportDate').value = todayStr;
+                    if(document.getElementById('taskReportDate')) {
+                        document.getElementById('taskReportDate').value = todayStr;
+                    }
                     renderEmpTaskHistory();
                     switchEmpTab(activeEmpTab);
                     initBackgroundTracking();
@@ -546,7 +546,9 @@
                 }
 
                 let todayStr = new Date().toISOString().split('T')[0];
-                document.getElementById('taskReportDate').value = todayStr;
+                if(document.getElementById('taskReportDate')) {
+                    document.getElementById('taskReportDate').value = todayStr;
+                }
                 renderEmpTaskHistory();
                 switchEmpTab('attendance');
                 initBackgroundTracking();
